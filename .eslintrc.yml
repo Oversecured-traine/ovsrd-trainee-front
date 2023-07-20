@@ -1,0 +1,33 @@
+root: true
+env:
+  browser: true
+  es6: true
+  node: true
+extends:
+  - eslint:recommended
+  - plugin:vue/vue3-essential
+parserOptions:
+  parser: "@babel/eslint-parser"
+rules:
+  indent:
+    - warn
+    - 4
+    - SwitchCase: 1
+  quotes:
+    - warn
+    - single
+  semi:
+    - warn
+    - always
+  no-unused-vars:
+    - off
+  vue/html-indent:
+    - warn
+    - 4
+  vue/script-indent:
+    - warn
+    - 4
+    - switchCase: 1
+  comma-dangle:
+    - warn
+    - always-multiline
