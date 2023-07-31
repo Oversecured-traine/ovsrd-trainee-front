@@ -1,8 +1,3 @@
-<script setup>
-import Board from './components/Board.vue';
-
-</script>
-
 <template>
     <v-app>
 
@@ -11,3 +6,16 @@ import Board from './components/Board.vue';
         </v-main>
     </v-app>
 </template>
+
+<script>
+import Board from './components/Board.vue';
+
+export default {
+    components: {
+        Board,
+    },
+
+};
+
+</script>
+
