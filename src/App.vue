@@ -1,22 +1,21 @@
 <template>
-  <div>
-    <h1>{{ greeting }}</h1>
-  </div>
+    <v-app>
+
+        <v-main>
+            <Board/>
+        </v-main>
+    </v-app>
 </template>
 
 <script>
+import Board from './components/Board.vue';
+
 export default {
-  data() {
-    return {
-      greeting: 'Hello World',
-    };
-  },
+    components: {
+        Board,
+    },
+
 };
+
 </script>
 
-<style scoped>
-h1 {
-  color: blue;
-  text-align: center;
-}
-</style>
