@@ -12,25 +12,24 @@
                             v-for="column in columns"
                             :key="column.key"
                             :column="column"
-                            @update-column-title="onUpdateColumnTitle"
-                            @add-card="addNewCard"
-                            @delete-column="onDeleteColumn">
+                        >
                             <Card
-                                v-for="card in columns[this.getColumnIndex(column.key)].cards"
+                                v-for="card in cards(column.key)"
                                 :key="card.key"
                                 :card="card"
                                 :column="column"
-                                @delete-card="onDeleteCard"
-                                @save-card="onSaveCard">
+                            >
                                 {{ card.title }}
                             </Card>
                         </Column>
                         <div class="add-another-column">
                             <button
                                 class="add-another-column-btn"
-                                @click="addNewColumn">
+                                @click="addNewColumn"
+                            >
                                 <v-icon icon="mdi-plus"></v-icon>
-                                <span style="margin-left: 0.25rem">Add another list</span>
+                                <span style="margin-left: 0.25rem">Add another list</span
+                                >
                             </button>
                         </div>
                     </div>
@@ -48,63 +47,23 @@ export default {
     components: {
         Column,
         Card,
-        
     },
     data() {
         return {
-            columns: [],
             showModal: false,
         };
     },
+    computed: {
+        columns() {
+            return this.$store.state.columns;
+        },
+        cards() {
+            return this.$store.getters.getCardsForColumn;
+        },
+    },
     methods: {
         addNewColumn() {
-            this.columns.push({
-                key: Math.random() * 10,
-                title: 'New List',
-                cards: [],
-            });
-        },
-
-        addNewCard(columnKey) {
-            this.columns[this.getColumnIndex(columnKey)].cards.push(
-                { 
-                    key: Math.random() * 10, 
-                    title: 'New Card', 
-                    description: '' ,
-                });
-            
-        },
-
-        onDeleteCard(cardKey, columnKey) {
-            let columnIndex = this.getColumnIndex(columnKey);
-            let cardIndex = this.getCardIndex(columnIndex, cardKey);
-            this.columns[columnIndex].cards.splice(cardIndex, 1);
-        },
-
-        onDeleteColumn(columnKey) {
-            const columnIndex = this.getColumnIndex(columnKey);
-            this.columns.splice(columnIndex, 1);
-        },
-
-        onUpdateColumnTitle(columnKey, title) {
-            let columnIndex = this.getColumnIndex(columnKey);
-            this.columns[columnIndex].title = title;
-        },
-
-        getColumnIndex(columnKey) {
-            return this.columns.findIndex(column => column.key === columnKey);
-        },
-
-        getCardIndex(columnIndex, cardKey) {
-            return this.columns[columnIndex].cards .findIndex(card => card.key === cardKey);
-        },
-
-        onSaveCard(cardKey, columnKey, newTitle, newDescription) {
-            let columnIndex = this.getColumnIndex(columnKey);
-            let cardIndex = this.getCardIndex(columnIndex, cardKey);
-            let card = this.columns[columnIndex].cards[cardIndex];
-            card.title = newTitle;
-            card.description = newDescription;
+            this.$store.commit('ADD_COLUMN');
         },
     },
 };
