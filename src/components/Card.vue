@@ -16,14 +16,23 @@
                     <span class="headline">Edit Card</span>
                 </v-card-title>
                 <v-card-text>
-                    <v-text-field label="Title" v-model="newTitle" @input="editCardTitle($event)">
+                    <v-text-field
+                        label="Title"
+                        v-model="newTitle"
+                        @input="editCardTitle($event)"
+                    >
                     </v-text-field>
-                    <v-textarea label="Description" v-model="newDescription" @input="editCardDescription($event)">
+                    <v-textarea
+                        label="Description"
+                        v-model="newDescription"
+                        @input="editCardDescription($event)"
+                    >
                     </v-textarea>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" text @click="openModal = false">Close</v-btn>
+                    <v-btn color="primary" text @click="openModal = false">Close</v-btn
+                    >
                     <v-btn color="primary" text @click="saveCard">Save</v-btn>
                 </v-card-actions>
             </v-card>
@@ -32,7 +41,6 @@
 </template>
 
 <script>
-
 export default {
     data() {
         return {
@@ -47,17 +55,19 @@ export default {
     },
     methods: {
         deleteCard() {
-            this.$emit('delete-card', this.card.key, this.column.key);
+            this.$store.commit('DELETE_CARD', {
+                columnKey: this.column.key,
+                cardKey: this.card.key,
+            });
         },
 
         saveCard() {
-            this.$emit(
-                'save-card',
-                this.card.key,
-                this.column.key,
-                this.newTitle,
-                this.newDescription,
-            );
+            this.$store.commit('UPDATE_CARD', {
+                cardKey: this.card.key,
+                columnKey: this.column.key,
+                newTitle: this.newTitle,
+                newDescription: this.newDescription,
+            });
             this.openModal = false;
         },
 
@@ -72,7 +82,6 @@ export default {
 </script>
 
 <style scoped>
-
 h4 {
     padding: 0.3rem;
     color: #4a5568;
