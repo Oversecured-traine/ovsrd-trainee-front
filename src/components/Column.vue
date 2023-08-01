@@ -2,18 +2,23 @@
 <template>
     <div class="column">
         <div class="column-title">
-            <input @input="editColumnTitle($event)" placeholder="Enter list name"> 
-            <!--Dropdown Menu-->           
+            <input
+                @input="editColumnTitle($event)"
+                placeholder="Enter list name"
+            />
             <v-menu offset-y>
                 <template v-slot:activator="{ props }">
                     <button class="column-actions-btn" v-bind="props">
-                        <v-icon icon="mdi-dots-horizontal" size="small"></v-icon>
+                        <v-icon
+                            icon="mdi-dots-horizontal"
+                            size="small"
+                        ></v-icon>
                     </button>
                 </template>
                 <v-list>
                     <v-list-item @click="deleteColumn">
                         <v-icon icon="mdi-delete" size="small"></v-icon>
-                        Delete list                       
+                        Delete list
                     </v-list-item>
                 </v-list>
             </v-menu>
@@ -42,22 +47,21 @@ export default {
     },
     methods: {
         addCard() {
-            this.$emit('add-card', this.column.key);
+            this.$store.commit('ADD_CARD', this.column.key);
         },
 
         editColumnTitle(event) {
-            this.$emit(
-                'update-column-title',
-                this.column.key,
-                event.target.value,
-            );
+            this.$store.commit('UPDATE_COLUMN_TITLE', {
+                columnKey: this.column.key,
+                newTitle: event.target.value,
+            });
         },
 
         deleteColumn() {
-            this.$emit('delete-column', this.column.key);
+            this.$store.commit('DELETE_COLUMN', this.column.key);
         },
-        
     },
+  
 };
 </script>
 
