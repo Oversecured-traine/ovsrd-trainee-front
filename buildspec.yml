@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - npm install
+  build:
+    commands:
+      - npm run build
+      - aws s3 sync dist/ s3://bucketbforfrontmain
+      - aws cloudfront create-invalidation --distribution-id E2GXNLN42XGQTH --paths "/*"
+
+artifacts:
+  files:
+    - '**/*'
+
+cache:
+  paths:
+    - node_modules/
