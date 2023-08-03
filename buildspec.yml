@@ -9,7 +9,7 @@ phases:
   build:
     commands:
       - npm run build
-      - aws s3 sync dist/ s3://bucketbforfrontmain
+      - aws s3 sync dist/ s3://bucket-front-main-kryvobok
       - aws cloudfront create-invalidation --distribution-id E2GXNLN42XGQTH --paths "/*"
 
 artifacts:
