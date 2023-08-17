@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <li>
-        <div class="card-item" @click="openModal = true">
+        <div class="card-item" @click="!openModal">
             <h4>
                 <slot> </slot>
             </h4>
@@ -41,12 +41,14 @@
 </template>
 
 <script>
+import { mapGetters, mapActions, mapMutations } from 'vuex';
+
 export default {
     data() {
         return {
             openModal: false,
-            newTitle: this.card.title,
-            newDescription: this.card.description,
+            newTitle: this.card.cardTitle,
+            newDescription: this.card.cardDescription,
         };
     },
     props: {
@@ -54,29 +56,36 @@ export default {
         column: Object,
     },
     methods: {
-        deleteCard() {
-            this.$store.commit('DELETE_CARD', {
-                columnKey: this.column.key,
-                cardKey: this.card.key,
-            });
+        ...mapActions([
+            'GET_COLUMNS',
+            'GET_CARDS_BY_COLUMN_ID',
+            'ADD_COLUMN',
+            'ADD_CARD',
+            'DELETE_CARD',
+        ]),
+        ...mapMutations(['SET_LOADING']),
+
+        async deleteCard() {
+            try {
+                this.SET_LOADING(true);
+
+                await this.DELETE_CARD(this.card.cardID);
+            } 
+            catch (error) {
+                console.error('Error deleting a card:', error);
+            }
+
+            finally {
+                this.SET_LOADING(false);
+            }
         },
 
-        saveCard() {
-            this.$store.commit('UPDATE_CARD', {
-                cardKey: this.card.key,
-                columnKey: this.column.key,
-                newTitle: this.newTitle,
-                newDescription: this.newDescription,
-            });
-            this.openModal = false;
-        },
-
-        editCardTitle() {
-            this.newTitle = event.target.value;
-        },
-        editCardDescription() {
-            this.newDescription = event.target.value;
-        },
+        // editCardTitle() {
+        //     this.newTitle = event.target.value;
+        // },
+        // editCardDescription() {
+        //     this.newDescription = event.target.value;
+        // },
     },
 };
 </script>

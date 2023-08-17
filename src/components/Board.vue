@@ -9,27 +9,25 @@
                 <div class="column-container">
                     <div class="column-cards">
                         <Column
-                            v-for="column in columns"
-                            :key="column.key"
+                            v-for="column in getAllColumns"
+                            :key="column.columnID"
                             :column="column"
                         >
                             <Card
-                                v-for="card in cards(column.key)"
-                                :key="card.key"
+                                v-for="card in getCardsByColumnID(column.columnID)"
+                                :key="card.cardID"
                                 :card="card"
                                 :column="column"
                             >
-                                {{ card.title }}
+                                {{ card.cardTitle }}
                             </Card>
                         </Column>
                         <div class="add-another-column">
                             <button
                                 class="add-another-column-btn"
-                                @click="addNewColumn"
-                            >
+                                @click="addNewColumn">
                                 <v-icon icon="mdi-plus"></v-icon>
-                                <span style="margin-left: 0.25rem">Add another list</span
-                                >
+                                <span style="margin-left: 0.25rem">Add another list</span>
                             </button>
                         </div>
                     </div>
@@ -42,6 +40,7 @@
 <script>
 import Column from './Column.vue';
 import Card from './Card.vue';
+import { mapGetters, mapActions, mapMutations } from 'vuex';
 
 export default {
     components: {
@@ -51,23 +50,57 @@ export default {
     data() {
         return {
             showModal: false,
+            isLoading: false,
         };
     },
     computed: {
-        columns() {
-            return this.$store.state.columns;
-        },
-        cards() {
-            return this.$store.getters.getCardsForColumn;
-        },
+        ...mapGetters(['getAllColumns', 'getCardsByColumnID']),
     },
     methods: {
-        addNewColumn() {
-            this.$store.commit('ADD_COLUMN');
+        ...mapActions(['GET_COLUMNS', 'GET_CARDS_BY_COLUMN_ID', 'ADD_COLUMN']),
+        ...mapMutations(['SET_LOADING']),
+
+        async fetchColumnsAndCards() {
+
+            this.SET_LOADING(true);
+            try {
+                await this.GET_COLUMNS();
+
+                for (const column of this.getAllColumns) {
+                    await this.GET_CARDS_BY_COLUMN_ID(column.columnID);
+                }
+            } 
+            catch (error) {
+                console.error('Error fetching columns or cards:', error);
+            } 
+            finally {
+                this.SET_LOADING(false);
+            }
         },
+
+        async addNewColumn() {
+
+            try {
+                this.SET_LOADING(true);
+                await this.ADD_COLUMN();
+            } 
+            catch (error) {
+                console.error('Error fetching columns:', error);
+            }
+            finally {
+                this.SET_LOADING(false);
+            }
+
+        },
+    },
+    async mounted() {
+        
+        await this.fetchColumnsAndCards();
     },
 };
 </script>
+
+
 
 <style scoped>
 .main-container {
@@ -118,7 +151,7 @@ h1 {
     height: 100%;
     align-items: flex-start;
     padding: 0 1rem 1rem;
-    margin-left: 1rem;
+    /* margin-left: 1rem; */
     gap: 1rem;
 }
 

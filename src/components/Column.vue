@@ -4,7 +4,7 @@
         <div class="column-title">
             <input
                 @input="editColumnTitle($event)"
-                placeholder="Enter list name"
+                :placeholder="column.columnTitle || 'Enter list name'"
             />
             <v-menu offset-y>
                 <template v-slot:activator="{ props }">
@@ -30,7 +30,7 @@
                 </ul>
             </div>
             <div class="add-btn-container">
-                <button class="add-btn" @click="addCard">
+                <button class="add-btn" @click="addNewCard">
                     <v-icon icon="mdi-plus"></v-icon>
                     <span style="margin-left: 0.25rem">Add Card</span>
                 </button>
@@ -40,33 +40,61 @@
 </template>
 
 <script>
+import { mapGetters, mapActions, mapMutations } from 'vuex';
 
 export default {
     props: {
         column: Object,
     },
-    methods: {
-        addCard() {
-            this.$store.commit('ADD_CARD', this.column.key);
-        },
 
-        editColumnTitle(event) {
-            this.$store.commit('UPDATE_COLUMN_TITLE', {
-                columnKey: this.column.key,
-                newTitle: event.target.value,
-            });
-        },
-
-        deleteColumn() {
-            this.$store.commit('DELETE_COLUMN', this.column.key);
-        },
+    computed: {
+        // ...mapGetters(['getAllColumns', 'getAllCards', 'getCardsByColumnID']),
     },
-  
+    methods: {
+        ...mapActions([
+            'GET_COLUMNS',
+            'GET_CARDS_BY_COLUMN_ID',
+            'ADD_COLUMN',
+            'ADD_CARD',
+            'DELETE_COLUMN',
+        ]),
+        ...mapMutations(['SET_LOADING']),
+
+        async addNewCard() {
+            try {
+                this.SET_LOADING(true);
+
+                await this.ADD_CARD(this.column.columnID);
+            } 
+            catch (error) {
+                console.error('Error adding a card:', error);
+            }
+
+            finally {
+                this.SET_LOADING(false);
+            }
+        },
+
+        async deleteColumn() {
+            try {
+                this.SET_LOADING(true);
+
+                await this.DELETE_COLUMN(this.column.columnID);
+            } 
+            catch (error) {
+                console.error('Error deleting a column:', error);
+            }
+
+            finally {
+                this.SET_LOADING(false);
+            }
+        },
+
+    },
 };
 </script>
 
 <style scoped>
-
 ul {
     list-style-type: none;
     display: flex;
@@ -76,7 +104,7 @@ ul {
 
 .column {
     width: 18rem;
-    background-color: #cbd5e0;
+    background-color: #f1f2f4;
     display: flex;
     flex-direction: column;
     border-radius: 0.375rem;
