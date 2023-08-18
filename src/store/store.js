@@ -42,6 +42,26 @@ const store = createStore({
         DELETE_COLUMN(state, columnID) {
             state.columns = state.columns.filter(column => column.columnID !== columnID);
         },
+
+        UPDATE_COLUMN(state, columnID, columnTitle) {
+            const columnToUpdate = state.columns.find(column => column.columnID === columnID);
+            if (columnToUpdate) {
+                columnToUpdate.columnTitle = columnTitle;
+            }
+
+        },
+
+        UPDATE_CARD(state, { cardID, cardTitle, cardDescription }) {
+            const cardToUpdate = state.cards.find(card => card.cardID === cardID);
+            if (cardToUpdate) {
+                cardToUpdate.cardTitle = cardTitle;
+                cardToUpdate.cardDescription = cardDescription;
+            }
+
+            console.log('CARD IN MATATION', cardToUpdate);
+
+
+        },
         
     },
 
@@ -102,9 +122,9 @@ const store = createStore({
 
         async ADD_CARD({ commit }, columnID) {
 
-            const card = await apiRequests.createCard('Press to edit', columnID );
+            const card = await apiRequests.createCard({ columnID: columnID, cardTitle: 'Press to edit' });
 
-            console.log('CARD', card);
+            console.log('CARD ACTION', card);
 
             if (card !== null) {
                 commit('ADD_CARD', card);
@@ -130,11 +150,31 @@ const store = createStore({
 
             const column = await apiRequests.deleteColumn(columnID);
 
-            console.log('CARD', column);
-
             if (column !== null) {
                 commit('DELETE_COLUMN', columnID);
                 return column;
+            }
+            return null;
+        },
+
+        async UPDATE_COLUMN({ commit }, {columnID, columnTitle}) {
+
+            const column = await apiRequests.updateColumn(columnID, columnTitle);
+
+            if (column !== null) {
+                commit('UPDATE_COLUMN', { columnID, columnTitle });
+                return column;
+            }
+            return null;
+        },
+
+        async UPDATE_CARD({ commit }, { cardTitle, cardID, cardDescription }) {
+
+            const card = await apiRequests.updateCard(cardTitle, cardID, cardDescription);
+            console.log('CARD IN ACTION', card);
+            if (card !== null) {
+                commit('UPDATE_CARD', { cardID, cardTitle, cardDescription });
+                return card;
             }
             return null;
         },

@@ -20,7 +20,7 @@ export const apiRequests = {
 
     async createColumn(columnTitle) {
         try {
-            const response = await apiClient.get('/create-column', columnTitle);
+            const response = await apiClient.post('/create-column', { columnTitle: columnTitle });
             return response;
         } catch (error) {
             console.error('Error creating a column:', error);
@@ -40,7 +40,7 @@ export const apiRequests = {
 
     async updateColumn(columnID, columnTitle) {
         try {
-            const response = await apiClient.put(`/update-columns/${columnID}`, columnTitle);
+            const response = await apiClient.put(`/update-columns/${columnID}`, { columnTitle: columnTitle  });
             return response;
         } catch (error) {
             console.error('Error updating a column:', error);
@@ -79,10 +79,15 @@ export const apiRequests = {
         }
     },
 
-    async createCard(cardTitle, columnID) {
+    async createCard({ columnID, cardTitle }) {
+
+        console.log('columnID', columnID);
+        console.log('title', cardTitle);
+
         try {
-            const response = await apiClient.post(`/create-card/${columnID}`, cardTitle);
-            return response;
+            const response = await apiClient.post(`/create-card/${columnID}`, { cardTitle: cardTitle });
+            console.log('RESPONSE', response);
+            return response.data.data;
         } catch (error) {
             console.error('Error creating a card:', error);
             return null;
@@ -101,8 +106,9 @@ export const apiRequests = {
 
     async updateCard(cardTitle, cardID, cardDescription) {
         try {
-            const response = await apiClient.put(`/update-card/${cardID}`, cardTitle, cardDescription);
-            return response;
+            const response = await apiClient.put(`/update-card/${cardID}`, { cardTitle: cardTitle , cardDescription: cardDescription  });
+            console.log('RESPONSE UPDATE CARD', response.data.data);
+            return response.data.data;
         } catch (error) {
             console.error('Error updating a card:', error);
             return null;

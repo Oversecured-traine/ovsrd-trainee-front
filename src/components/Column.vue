@@ -2,11 +2,8 @@
 <template>
     <div class="column">
         <div class="column-title">
-            <input
-                @input="editColumnTitle($event)"
-                :placeholder="column.columnTitle || 'Enter list name'"
-            />
-            <v-menu offset-y>
+            <input type="text" v-model="newTitle" @blur="editColumnTitle" />
+            <v-menu offset-y class="menu-container">
                 <template v-slot:activator="{ props }">
                     <button class="column-actions-btn" v-bind="props">
                         <v-icon
@@ -40,16 +37,19 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
 export default {
     props: {
         column: Object,
     },
 
-    computed: {
-        // ...mapGetters(['getAllColumns', 'getAllCards', 'getCardsByColumnID']),
+    data() {
+        return {
+            newTitle: this.column.columnTitle,
+        };
     },
+
     methods: {
         ...mapActions([
             'GET_COLUMNS',
@@ -57,39 +57,48 @@ export default {
             'ADD_COLUMN',
             'ADD_CARD',
             'DELETE_COLUMN',
+            'UPDATE_COLUMN',
         ]),
         ...mapMutations(['SET_LOADING']),
+
+        async deleteColumn() {
+            try {
+                this.SET_LOADING(true);
+                await this.DELETE_COLUMN(this.column.columnID);
+            } catch (error) {
+                console.error('Error deleting a column:', error);
+            } finally {
+                this.SET_LOADING(false);
+            }
+        },
 
         async addNewCard() {
             try {
                 this.SET_LOADING(true);
 
-                await this.ADD_CARD(this.column.columnID);
-            } 
-            catch (error) {
+                await this.ADD_CARD({ columnID: this.column.columnID });
+            } catch (error) {
                 console.error('Error adding a card:', error);
-            }
-
-            finally {
+            } finally {
                 this.SET_LOADING(false);
             }
         },
 
-        async deleteColumn() {
+        async editColumnTitle(event) {
             try {
+                const newTitle = event.target.value;
                 this.SET_LOADING(true);
 
-                await this.DELETE_COLUMN(this.column.columnID);
-            } 
-            catch (error) {
-                console.error('Error deleting a column:', error);
-            }
-
-            finally {
+                await this.UPDATE_COLUMN({
+                    columnID: this.column.columnID,
+                    columnTitle: newTitle,
+                });
+            } catch (error) {
+                console.error('Error updating a column:', error);
+            } finally {
                 this.SET_LOADING(false);
             }
         },
-
     },
 };
 </script>

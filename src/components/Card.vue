@@ -1,10 +1,12 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <li>
-        <div class="card-item" @click="!openModal">
+        <div class="card-item" @click="openModal = true">
             <h4>
                 <slot> </slot>
             </h4>
+        </div>
+        <div class="delete-card-btn-container">
             <button @click="deleteCard" class="delete-card-btn">
                 <v-icon icon="mdi-archive" size="x-small"></v-icon>
             </button>
@@ -18,15 +20,11 @@
                 <v-card-text>
                     <v-text-field
                         label="Title"
-                        v-model="newTitle"
-                        @input="editCardTitle($event)"
-                    >
+                        v-model="newTitle">
                     </v-text-field>
                     <v-textarea
                         label="Description"
-                        v-model="newDescription"
-                        @input="editCardDescription($event)"
-                    >
+                        v-model="newDescription">
                     </v-textarea>
                 </v-card-text>
                 <v-card-actions>
@@ -41,7 +39,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
 export default {
     data() {
@@ -62,6 +60,8 @@ export default {
             'ADD_COLUMN',
             'ADD_CARD',
             'DELETE_CARD',
+            'UPDATE_CARD',
+
         ]),
         ...mapMutations(['SET_LOADING']),
 
@@ -80,12 +80,29 @@ export default {
             }
         },
 
-        // editCardTitle() {
-        //     this.newTitle = event.target.value;
-        // },
-        // editCardDescription() {
-        //     this.newDescription = event.target.value;
-        // },
+        async saveCard() {
+            try {
+                this.openModal = false;
+                this.SET_LOADING(true);
+
+                const updatedCard = {
+                    cardID: this.card.cardID,
+                    cardTitle: this.newTitle,
+                    cardDescription: this.newDescription,
+                };
+
+                console.log('THIS CARD WILL BE SAVED', updatedCard);
+
+                await this.UPDATE_CARD(updatedCard);
+
+            } 
+            catch (error) {
+                console.error('Error updating a card:', error);
+            } 
+            finally {
+                this.SET_LOADING(false);
+            }
+        },
     },
 };
 </script>
