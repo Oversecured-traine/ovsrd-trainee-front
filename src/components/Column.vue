@@ -75,8 +75,7 @@ export default {
         async addNewCard() {
             try {
                 this.SET_LOADING(true);
-
-                await this.ADD_CARD({ columnID: this.column.columnID });
+                await this.ADD_CARD(this.column.columnID);
             } catch (error) {
                 console.error('Error adding a card:', error);
             } finally {

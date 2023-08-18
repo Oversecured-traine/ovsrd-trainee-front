@@ -122,7 +122,7 @@ const store = createStore({
 
         async ADD_CARD({ commit }, columnID) {
 
-            const card = await apiRequests.createCard({ columnID: columnID, cardTitle: 'Press to edit' });
+            const card = await apiRequests.createCard({ columnID, cardTitle: 'Press to edit' });
 
             console.log('CARD ACTION', card);
 
