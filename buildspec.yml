@@ -9,13 +9,17 @@ phases:
   build:
     commands:
       - npm run build
-  sync_s3:
+  post_build:
     commands:
       - aws s3 sync dist/ s3://$S3_Content_Bucket
-  invalidation_cloudfront:
-    commands:
       - aws cloudfront create-invalidation --distribution-id $CL_FRONT_DIST_ID --paths "/*"
 
 artifacts:
   files:
     - '**/*'
+
+
+
+
+
+
