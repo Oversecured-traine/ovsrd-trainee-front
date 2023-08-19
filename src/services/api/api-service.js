@@ -5,153 +5,72 @@ const apiClient = axios.create({
     timeout: 10000,
 });
 
+async function handleErrorAndReturnNull(request) {
+    try {
+        const response = await request;
+        return response.data.data;
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+}
+
 export const apiRequests = {
 
-    // Column requests
     async getColumns() {
-        try {
-            const response = await apiClient.get('/columns');
-            return response.data.data;
-        } catch (error) {
-            console.error('Error fetching columns:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.get('/columns'));
     },
 
     async createColumn(columnTitle) {
-        try {
-            const response = await apiClient.post('/create-column', { columnTitle: columnTitle });
-            console.log('CREATE COL  RESP', response.data.data);
-            return response.data.data;
-        } catch (error) {
-            console.error('Error creating a column:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.post('/create-column', { columnTitle }));
     },
 
     async getColumnByID(columnID) {
-        try {
-            const response = await apiClient.get(`/get-column/${columnID}`);
-            return response.data.data;
-        } catch (error) {
-            console.error('Error getting a column:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.get(`/get-column/${columnID}`));
     },
 
     async updateColumn(columnID, columnTitle) {
-        try {
-            const response = await apiClient.put(`/update-columns/${columnID}`, { columnTitle: columnTitle  });
-            return response;
-        } catch (error) {
-            console.error('Error updating a column:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.put(`/update-columns/${columnID}`, { columnTitle }));
     },
 
     async deleteColumn(columnID) {
-        try {
-            const response = await apiClient.delete(`/delete-columns/${columnID}`);
-            return response;
-        } catch (error) {
-            console.error('Error deleting a column:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.delete(`/delete-columns/${columnID}`));
     },
 
     async getMaxColumnIndex() {
-        try {
-            const response = await apiClient.get('columns/maxIndex');
-            return response.data.data;
-        } catch (error) {
-            console.error('Error getting a max column index:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.get('columns/maxIndex'));
     },
 
-    // Card requests
     async getCards() {
-        try {
-            const response = await apiClient.get('/cards');
-            return response.data.data;
-        } catch (error) {
-            console.error('Error fetching cards:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.get('/cards'));
     },
 
     async createCard({ columnID, cardTitle }) {
-
-        try {
-            const response = await apiClient.post(`/create-card/${columnID}`, { cardTitle: cardTitle });
-            console.log('RESPONSE', response);
-            return response.data.data;
-        } catch (error) {
-            console.error('Error creating a card:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.post(`/create-card/${columnID}`, { cardTitle }));
     },
 
     async getCardByID(cardID) {
-        try {
-            const response = await apiClient.get(`/get-card/${cardID}`);
-            return response.data.data;
-        } catch (error) {
-            console.error('Error getting a card:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.get(`/get-card/${cardID}`));
     },
 
     async updateCard(cardTitle, cardID, cardDescription) {
-        try {
-            const response = await apiClient.put(`/update-card/${cardID}`, { cardTitle: cardTitle , cardDescription: cardDescription  });
-            console.log('RESPONSE UPDATE CARD', response.data.data);
-            return response.data.data;
-        } catch (error) {
-            console.error('Error updating a card:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.put(`/update-card/${cardID}`, { cardTitle, cardDescription }));
     },
 
     async getCardsByColumnID(columnID) {
-        try {
-            const response = await apiClient.get(`/columns/${columnID}/cards`);
-            return response.data.data;
-        } catch (error) {
-            console.error('Error getting cards:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.get(`/columns/${columnID}/cards`));
     },
 
     async deleteCard(cardID) {
-        try {
-            const response = await apiClient.delete(`/delete-card/${cardID}`);
-            return response;
-        } catch (error) {
-            console.error('Error deleting a card:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.delete(`/delete-card/${cardID}`));
     },
 
     async getMaxCardIndex(columnID) {
-        try {
-            const response = await apiClient.get(`columns/${columnID}/maxIndex`);
-            return response.data.data;
-        } catch (error) {
-            console.error('Error getting max card index:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.get(`columns/${columnID}/maxIndex`));
     },
 
     async move(cardID, columnID, prevCardIndex, nextCardIndex) {
-        try {
-            const response = await apiClient.post(`/cards/${cardID}/${columnID}/${prevCardIndex}/${nextCardIndex}/move`);
-            return response.data.data;
-        } catch (error) {
-            console.error('Error moving a card:', error);
-            return null;
-        }
+        return handleErrorAndReturnNull(apiClient.post(`/cards/${cardID}/${columnID}/${prevCardIndex}/${nextCardIndex}/move`));
     },
 
 };
-

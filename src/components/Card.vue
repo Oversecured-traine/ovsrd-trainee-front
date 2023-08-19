@@ -40,6 +40,8 @@
 
 <script>
 import { mapActions, mapMutations } from 'vuex';
+import { createToast } from 'mosha-vue-toastify';
+import 'mosha-vue-toastify/dist/style.css'; 
 
 export default {
     data() {
@@ -65,6 +67,10 @@ export default {
         ]),
         ...mapMutations(['SET_LOADING']),
 
+        toast() {
+            createToast({ title: 'Title cannot be empty' }, { timeout: 3500, position: 'top-right', showIcon: true});
+        },
+
         async deleteCard() {
             try {
                 this.SET_LOADING(true);
@@ -83,15 +89,27 @@ export default {
         async saveCard() {
             try {
                 this.openModal = false;
+                console.log('this.newTitle', this.newTitle);
+                console.log('this.newDescription', typeof this.newDescription);
+
+                this.newTitle = this.newTitle.trim();
+                if(this.newDescription) {
+                    this.newDescription = this.newDescription.trim();
+                }
+
+                if(this.newTitle.length === 0) {
+                    this.newTitle = this.card.cardTitle;
+                    this.toast();
+                    return;
+                }   
+
                 this.SET_LOADING(true);
 
                 const updatedCard = {
                     cardID: this.card.cardID,
                     cardTitle: this.newTitle,
-                    cardDescription: this.newDescription,
+                    cardDescription: this.newDescription || ' ',
                 };
-
-                console.log('THIS CARD WILL BE SAVED', updatedCard);
 
                 await this.UPDATE_CARD(updatedCard);
 
