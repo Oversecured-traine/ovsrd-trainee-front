@@ -100,8 +100,6 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
 .main-container {
     display: flex;
