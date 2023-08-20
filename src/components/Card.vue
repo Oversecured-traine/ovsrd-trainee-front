@@ -18,19 +18,14 @@
                     <span class="headline">Edit Card</span>
                 </v-card-title>
                 <v-card-text>
-                    <v-text-field
-                        label="Title"
-                        v-model="newTitle">
+                    <v-text-field label="Title" v-model="newTitle">
                     </v-text-field>
-                    <v-textarea
-                        label="Description"
-                        v-model="newDescription">
+                    <v-textarea label="Description" v-model="newDescription">
                     </v-textarea>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" text @click="openModal = false">Close</v-btn
-                    >
+                    <v-btn color="primary" text @click="openModal = false">Close</v-btn>
                     <v-btn color="primary" text @click="saveCard">Save</v-btn>
                 </v-card-actions>
             </v-card>
@@ -41,7 +36,7 @@
 <script>
 import { mapActions, mapMutations } from 'vuex';
 import { createToast } from 'mosha-vue-toastify';
-import 'mosha-vue-toastify/dist/style.css'; 
+import 'mosha-vue-toastify/dist/style.css';
 
 export default {
     data() {
@@ -63,12 +58,14 @@ export default {
             'ADD_CARD',
             'DELETE_CARD',
             'UPDATE_CARD',
-
         ]),
         ...mapMutations(['SET_LOADING']),
 
         toast() {
-            createToast({ title: 'Title cannot be empty' }, { timeout: 3500, position: 'top-right', showIcon: true});
+            createToast(
+                { title: 'Title cannot be empty' },
+                { timeout: 3500, position: 'top-right', showIcon: true },
+            );
         },
 
         async deleteCard() {
@@ -76,12 +73,9 @@ export default {
                 this.SET_LOADING(true);
 
                 await this.DELETE_CARD(this.card.cardID);
-            } 
-            catch (error) {
+            } catch (error) {
                 console.error('Error deleting a card:', error);
-            }
-
-            finally {
+            } finally {
                 this.SET_LOADING(false);
             }
         },
@@ -89,35 +83,35 @@ export default {
         async saveCard() {
             try {
                 this.openModal = false;
-                console.log('this.newTitle', this.newTitle);
-                console.log('this.newDescription', typeof this.newDescription);
 
                 this.newTitle = this.newTitle.trim();
-                if(this.newDescription) {
-                    this.newDescription = this.newDescription.trim();
-                }
 
-                if(this.newTitle.length === 0) {
+                if (this.newTitle.length === 0 || 
+                    ( this.newTitle === this.card.cardTitle 
+                        && this.newDescription.trim() === this.card.cardDescription.trim())) {
+
                     this.newTitle = this.card.cardTitle;
-                    this.toast();
+                    this.newDescription = this.card.cardDescription;
+
+                    if (this.newTitle.length === 0) {
+                        this.toast();
+                    }
+
                     return;
-                }   
+                }
 
                 this.SET_LOADING(true);
 
                 const updatedCard = {
                     cardID: this.card.cardID,
                     cardTitle: this.newTitle,
-                    cardDescription: this.newDescription || ' ',
+                    cardDescription: this.newDescription ? this.newDescription.trim() : ' ',
                 };
 
                 await this.UPDATE_CARD(updatedCard);
-
-            } 
-            catch (error) {
+            } catch (error) {
                 console.error('Error updating a card:', error);
-            } 
-            finally {
+            } finally {
                 this.SET_LOADING(false);
             }
         },

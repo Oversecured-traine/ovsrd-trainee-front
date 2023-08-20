@@ -45,8 +45,9 @@ const store = createStore({
             state.cards = state.cards.filter(card => card.columnID !== columnID);
         },
 
-        UPDATE_COLUMN(state, columnID, columnTitle) {
+        UPDATE_COLUMN(state, { columnID, columnTitle }) {
             const columnToUpdate = state.columns.find(column => column.columnID === columnID);
+        
             if (columnToUpdate) {
                 columnToUpdate.columnTitle = columnTitle;
             }
@@ -55,6 +56,7 @@ const store = createStore({
 
         UPDATE_CARD(state, { cardID, cardTitle, cardDescription }) {
             const cardToUpdate = state.cards.find(card => card.cardID === cardID);
+            
             if (cardToUpdate) {
                 cardToUpdate.cardTitle = cardTitle;
                 cardToUpdate.cardDescription = cardDescription;
@@ -153,8 +155,9 @@ const store = createStore({
         async UPDATE_COLUMN({ commit }, { columnID, columnTitle }) {
             try {
                 const column = await apiRequests.updateColumn(columnID, columnTitle);
+
                 if (column !== null) {
-                    commit('UPDATE_COLUMN', { columnID, columnTitle });
+                    commit('UPDATE_COLUMN', { columnID: column.columnID, columnTitle: column.columnTitle });
                 }
             } catch (error) {
                 console.error('Error updating column:', error);
@@ -170,7 +173,7 @@ const store = createStore({
             } catch (error) {
                 console.error('Error updating card:', error);
             }
-        }
+        },
         
     },
     

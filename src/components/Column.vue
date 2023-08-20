@@ -1,10 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    
     <div class="column">
         <div class="column-title">
-            <input type="text" v-model="newTitle" @blur="editColumnTitle" />
-            <v-menu offset-y class="menu-container">
+            <input type="text" v-model="title" @blur="editColumnTitle" />
+            <v-menu offset-y>
                 <template v-slot:activator="{ props }">
                     <button class="column-actions-btn" v-bind="props">
                         <v-icon
@@ -38,9 +37,9 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex';
+import { mapActions, mapMutations, mapGetters } from 'vuex';
 import { createToast } from 'mosha-vue-toastify';
-import 'mosha-vue-toastify/dist/style.css'; 
+import 'mosha-vue-toastify/dist/style.css';
 
 export default {
     props: {
@@ -49,7 +48,7 @@ export default {
 
     data() {
         return {
-            newTitle: this.column.columnTitle,
+            title: this.column.columnTitle,
         };
     },
 
@@ -65,77 +64,76 @@ export default {
         ...mapMutations(['SET_LOADING']),
 
         toast() {
-            createToast({ title: 'Title cannot be empty' }, { timeout: 3500, position: 'top-right', showIcon: true});
+            createToast(
+                { title: 'Title cannot be empty' },
+                { timeout: 3500, position: 'top-right', showIcon: true },
+            );
         },
 
         async deleteColumn() {
-
             try {
                 this.SET_LOADING(true);
                 await this.DELETE_COLUMN(this.column.columnID);
-            } 
-            catch (error) {
+
+            } catch (error) {
                 console.error('Error deleting a column:', error);
-            } 
-            finally {
+            } finally {
                 this.SET_LOADING(false);
             }
         },
 
         async addNewCard() {
-
             try {
                 this.SET_LOADING(true);
                 await this.ADD_CARD(this.column.columnID);
-            } 
-            catch (error) {
+
+            } catch (error) {
                 console.error('Error adding a card:', error);
-            } 
-            finally {
+            } finally {
                 this.SET_LOADING(false);
             }
         },
 
         async editColumnTitle(event) {
-
             try {
                 const newTitle = event.target.value.trim();
 
-                if(newTitle.length === 0) {
+                if (newTitle.length === 0 || newTitle === this.column.columnTitle) {
 
-                    this.newTitle = this.column.columnTitle;
-                    this.toast();
-
-                    return;
-                }
-                else if(newTitle == this.column.columnTitle) {
-
-                    this.newTitle = this.column.columnTitle;
+                    this.title = this.column.columnTitle;
+                    if (newTitle.length === 0) {
+                        this.toast();
+                    }
 
                     return;
                 }
 
-                this.newTitle = newTitle;
                 this.SET_LOADING(true);
 
                 await this.UPDATE_COLUMN({
                     columnID: this.column.columnID,
                     columnTitle: newTitle,
                 });
-            } 
-            catch (error) {
+
+                this.title = newTitle;
+
+            } catch (error) {
                 console.error('Error updating a column:', error);
-            } 
-            finally {
+                this.title = this.column.columnTitle;
+            } finally {
                 this.SET_LOADING(false);
             }
         },
 
+        removeOverflow() {
+
+        },
     },
 };
 </script>
 
 <style scoped>
+
 ul {
     list-style-type: none;
     display: flex;
