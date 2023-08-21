@@ -5,6 +5,8 @@
             <h4>
                 <slot> </slot>
             </h4>
+        </div>
+        <div class="delete-card-btn-container">
             <button @click="deleteCard" class="delete-card-btn">
                 <v-icon icon="mdi-archive" size="x-small"></v-icon>
             </button>
@@ -16,23 +18,14 @@
                     <span class="headline">Edit Card</span>
                 </v-card-title>
                 <v-card-text>
-                    <v-text-field
-                        label="Title"
-                        v-model="newTitle"
-                        @input="editCardTitle($event)"
-                    >
+                    <v-text-field label="Title" v-model="newTitle">
                     </v-text-field>
-                    <v-textarea
-                        label="Description"
-                        v-model="newDescription"
-                        @input="editCardDescription($event)"
-                    >
+                    <v-textarea label="Description" v-model="newDescription">
                     </v-textarea>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" text @click="openModal = false">Close</v-btn
-                    >
+                    <v-btn color="primary" text @click="openModal = false">Close</v-btn>
                     <v-btn color="primary" text @click="saveCard">Save</v-btn>
                 </v-card-actions>
             </v-card>
@@ -41,12 +34,16 @@
 </template>
 
 <script>
+import { mapActions, mapMutations } from 'vuex';
+import { createToast } from 'mosha-vue-toastify';
+import 'mosha-vue-toastify/dist/style.css';
+
 export default {
     data() {
         return {
             openModal: false,
-            newTitle: this.card.title,
-            newDescription: this.card.description,
+            newTitle: this.card.cardTitle,
+            newDescription: this.card.cardDescription,
         };
     },
     props: {
@@ -54,28 +51,69 @@ export default {
         column: Object,
     },
     methods: {
-        deleteCard() {
-            this.$store.commit('DELETE_CARD', {
-                columnKey: this.column.key,
-                cardKey: this.card.key,
-            });
+        ...mapActions([
+            'GET_COLUMNS',
+            'GET_CARDS_BY_COLUMN_ID',
+            'ADD_COLUMN',
+            'ADD_CARD',
+            'DELETE_CARD',
+            'UPDATE_CARD',
+        ]),
+        ...mapMutations(['SET_LOADING']),
+
+        toast() {
+            createToast(
+                { title: 'Title cannot be empty' },
+                { timeout: 3500, position: 'top-right', showIcon: true },
+            );
         },
 
-        saveCard() {
-            this.$store.commit('UPDATE_CARD', {
-                cardKey: this.card.key,
-                columnKey: this.column.key,
-                newTitle: this.newTitle,
-                newDescription: this.newDescription,
-            });
-            this.openModal = false;
+        async deleteCard() {
+            try {
+                this.SET_LOADING(true);
+
+                await this.DELETE_CARD(this.card.cardID);
+            } catch (error) {
+                console.error('Error deleting a card:', error);
+            } finally {
+                this.SET_LOADING(false);
+            }
         },
 
-        editCardTitle() {
-            this.newTitle = event.target.value;
-        },
-        editCardDescription() {
-            this.newDescription = event.target.value;
+        async saveCard() {
+            try {
+                this.openModal = false;
+
+                this.newTitle = this.newTitle.trim();
+
+                if (this.newTitle.length === 0 || 
+                    ( this.newTitle === this.card.cardTitle 
+                        && this.newDescription.trim() === this.card.cardDescription.trim())) {
+
+                    this.newTitle = this.card.cardTitle;
+                    this.newDescription = this.card.cardDescription;
+
+                    if (this.newTitle.length === 0) {
+                        this.toast();
+                    }
+
+                    return;
+                }
+
+                this.SET_LOADING(true);
+
+                const updatedCard = {
+                    cardID: this.card.cardID,
+                    cardTitle: this.newTitle,
+                    cardDescription: this.newDescription ? this.newDescription.trim() : ' ',
+                };
+
+                await this.UPDATE_CARD(updatedCard);
+            } catch (error) {
+                console.error('Error updating a card:', error);
+            } finally {
+                this.SET_LOADING(false);
+            }
         },
     },
 };

@@ -2,10 +2,7 @@
 <template>
     <div class="column">
         <div class="column-title">
-            <input
-                @input="editColumnTitle($event)"
-                placeholder="Enter list name"
-            />
+            <input type="text" v-model="title" @blur="editColumnTitle" />
             <v-menu offset-y>
                 <template v-slot:activator="{ props }">
                     <button class="column-actions-btn" v-bind="props">
@@ -30,7 +27,7 @@
                 </ul>
             </div>
             <div class="add-btn-container">
-                <button class="add-btn" @click="addCard">
+                <button class="add-btn" @click="addNewCard">
                     <v-icon icon="mdi-plus"></v-icon>
                     <span style="margin-left: 0.25rem">Add Card</span>
                 </button>
@@ -40,28 +37,98 @@
 </template>
 
 <script>
+import { mapActions, mapMutations, mapGetters } from 'vuex';
+import { createToast } from 'mosha-vue-toastify';
+import 'mosha-vue-toastify/dist/style.css';
 
 export default {
     props: {
         column: Object,
     },
+
+    data() {
+        return {
+            title: this.column.columnTitle,
+        };
+    },
+
     methods: {
-        addCard() {
-            this.$store.commit('ADD_CARD', this.column.key);
+        ...mapActions([
+            'GET_COLUMNS',
+            'GET_CARDS_BY_COLUMN_ID',
+            'ADD_COLUMN',
+            'ADD_CARD',
+            'DELETE_COLUMN',
+            'UPDATE_COLUMN',
+        ]),
+        ...mapMutations(['SET_LOADING']),
+
+        toast() {
+            createToast(
+                { title: 'Title cannot be empty' },
+                { timeout: 3500, position: 'top-right', showIcon: true },
+            );
         },
 
-        editColumnTitle(event) {
-            this.$store.commit('UPDATE_COLUMN_TITLE', {
-                columnKey: this.column.key,
-                newTitle: event.target.value,
-            });
+        async deleteColumn() {
+            try {
+                this.SET_LOADING(true);
+                await this.DELETE_COLUMN(this.column.columnID);
+
+            } catch (error) {
+                console.error('Error deleting a column:', error);
+            } finally {
+                this.SET_LOADING(false);
+            }
         },
 
-        deleteColumn() {
-            this.$store.commit('DELETE_COLUMN', this.column.key);
+        async addNewCard() {
+            try {
+                this.SET_LOADING(true);
+                await this.ADD_CARD(this.column.columnID);
+
+            } catch (error) {
+                console.error('Error adding a card:', error);
+            } finally {
+                this.SET_LOADING(false);
+            }
+        },
+
+        async editColumnTitle(event) {
+            try {
+                const newTitle = event.target.value.trim();
+
+                if (newTitle.length === 0 || newTitle === this.column.columnTitle) {
+
+                    this.title = this.column.columnTitle;
+                    if (newTitle.length === 0) {
+                        this.toast();
+                    }
+
+                    return;
+                }
+
+                this.SET_LOADING(true);
+
+                await this.UPDATE_COLUMN({
+                    columnID: this.column.columnID,
+                    columnTitle: newTitle,
+                });
+
+                this.title = newTitle;
+
+            } catch (error) {
+                console.error('Error updating a column:', error);
+                this.title = this.column.columnTitle;
+            } finally {
+                this.SET_LOADING(false);
+            }
+        },
+
+        removeOverflow() {
+
         },
     },
-  
 };
 </script>
 
@@ -76,7 +143,7 @@ ul {
 
 .column {
     width: 18rem;
-    background-color: #cbd5e0;
+    background-color: #f1f2f4;
     display: flex;
     flex-direction: column;
     border-radius: 0.375rem;
