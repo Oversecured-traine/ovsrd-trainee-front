@@ -1,11 +1,7 @@
 <template>
     <v-app>
-
         <v-main>
-<<<<<<< HEAD
             <LoadingSpinner v-if="isLoading"/>
-=======
->>>>>>> dev
             <Board/>
         </v-main>
     </v-app>
