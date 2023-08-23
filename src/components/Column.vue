@@ -22,9 +22,7 @@
         </div>
         <div class="card-list">
             <div class="scroll-section">
-                <ul>
-                    <slot></slot>
-                </ul>
+                <slot></slot>
             </div>
             <div class="add-btn-container">
                 <button class="add-btn" @click="addNewCard">
@@ -125,21 +123,11 @@ export default {
             }
         },
 
-        removeOverflow() {
-
-        },
     },
 };
 </script>
 
 <style scoped>
-
-ul {
-    list-style-type: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
 
 .column {
     width: 18rem;

@@ -20,7 +20,7 @@ const store = createStore({
         },
 
         SET_CARDS(state, cards) {
-            state.cards = cards;
+            state.cards = cards.sort((a, b) => a.cardIndex - b.cardIndex);
         },
 
         ADD_CARDS(state, cards, columnID) {
@@ -51,7 +51,6 @@ const store = createStore({
             if (columnToUpdate) {
                 columnToUpdate.columnTitle = columnTitle;
             }
-
         },
 
         UPDATE_CARD(state, { cardID, cardTitle, cardDescription }) {
@@ -62,6 +61,16 @@ const store = createStore({
                 cardToUpdate.cardDescription = cardDescription;
             }
 
+        },
+
+        MOVE_CARD(state, { cardID, columnID, cardIndex }) {
+            const cardToMove = state.cards.find(card => card.cardID === cardID);
+    
+            if (cardToMove) {
+                cardToMove.columnID = columnID;
+                cardToMove.cardIndex = cardIndex;
+                state.cards.sort((a, b) => a.cardIndex - b.cardIndex);
+            }
         },
         
     },
@@ -77,8 +86,9 @@ const store = createStore({
         },
 
         getCardsByColumnID: (state) => (columnID) => {
-            return state.cards.filter(card => card.columnID === columnID);
-        },
+            return state.cards
+                .filter(card => card.columnID === columnID);
+        },        
 
         isLoading: (state) => {
             return state.isLoading;
@@ -173,6 +183,46 @@ const store = createStore({
             } catch (error) {
                 console.error('Error updating card:', error);
             }
+        },
+
+        async MOVE_CARD({ commit, getters }, item) {
+    
+            try {
+                const { cardID, columnID, newCardIndex, moveInSameColumn } = item;               
+                const cards = getters.getCardsByColumnID(columnID);
+                let prevCardIndex = 0;
+                let nextCardIndex = 0;
+
+                if(cards.length === 0) {
+
+                    prevCardIndex = 0;
+                    nextCardIndex = 0;
+                }
+                else if(cards.length > 0) {
+
+                    if(newCardIndex === 0) {
+                        prevCardIndex = 0;
+                        nextCardIndex = cards[newCardIndex].cardIndex;
+                    }
+                    else if(moveInSameColumn && newCardIndex === cards.length - 1) {
+                        prevCardIndex = cards[cards.length - 1].cardIndex;
+                        nextCardIndex = 0;
+                    }
+                    else if(newCardIndex === cards.length) {
+                        prevCardIndex = cards[cards.length - 1].cardIndex;
+                        nextCardIndex = 0;
+
+                    }
+                    else {
+                        prevCardIndex = cards[newCardIndex - 1].cardIndex;
+                        nextCardIndex = cards[newCardIndex].cardIndex;
+                    }
+                }
+                const { cardIndex } = await apiRequests.moveCard(cardID, columnID, prevCardIndex, nextCardIndex);
+                commit('MOVE_CARD', { cardID, columnID, cardIndex });
+            } catch (error) {
+                console.error('Error updating card:', error);
+            }        
         },
         
     },
