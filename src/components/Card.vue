@@ -86,16 +86,18 @@ export default {
 
                 this.newTitle = this.newTitle.trim();
 
-                if (this.newTitle.length === 0 || 
-                    ( this.newTitle === this.card.cardTitle 
-                        && this.newDescription.trim() === this.card.cardDescription.trim())) {
+                if (this.newTitle.length === 0) {
+                    this.newTitle = this.card.cardTitle;
+
+                    this.toast();
+                }
+
+
+                if (this.newTitle === this.card.cardTitle 
+                    && this.newDescription.trim() === this.card.cardDescription.trim()) {
 
                     this.newTitle = this.card.cardTitle;
                     this.newDescription = this.card.cardDescription;
-
-                    if (this.newTitle.length === 0) {
-                        this.toast();
-                    }
 
                     return;
                 }
