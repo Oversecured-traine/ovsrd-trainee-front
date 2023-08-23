@@ -18,59 +18,59 @@ async function handleErrorAndReturnNull(request) {
 export const apiRequests = {
 
     async getColumns() {
-        return handleErrorAndReturnNull(apiClient.get('/columns'));
+        return await handleErrorAndReturnNull(apiClient.get('/columns'));
     },
 
     async createColumn(columnTitle) {
-        return handleErrorAndReturnNull(apiClient.post('/create-column', { columnTitle }));
+        return await handleErrorAndReturnNull(apiClient.post('/create-column', { columnTitle }));
     },
 
     async getColumnByID(columnID) {
-        return handleErrorAndReturnNull(apiClient.get(`/get-column/${columnID}`));
+        return await handleErrorAndReturnNull(apiClient.get(`/get-column/${columnID}`));
     },
 
     async updateColumn(columnID, columnTitle) {
-        return handleErrorAndReturnNull(apiClient.put(`/update-columns/${columnID}`, { columnTitle }));
+        return await handleErrorAndReturnNull(apiClient.put(`/update-columns/${columnID}`, { columnTitle }));
     },
 
     async deleteColumn(columnID) {
-        return handleErrorAndReturnNull(apiClient.delete(`/delete-columns/${columnID}`));
+        return await handleErrorAndReturnNull(apiClient.delete(`/delete-columns/${columnID}`));
     },
 
     async getMaxColumnIndex() {
-        return handleErrorAndReturnNull(apiClient.get('columns/maxIndex'));
+        return await handleErrorAndReturnNull(apiClient.get('columns/maxIndex'));
     },
 
     async getCards() {
-        return handleErrorAndReturnNull(apiClient.get('/cards'));
+        return await handleErrorAndReturnNull(apiClient.get('/cards'));
     },
 
     async createCard({ columnID, cardTitle }) {
-        return handleErrorAndReturnNull(apiClient.post(`/create-card/${columnID}`, { cardTitle }));
+        return await handleErrorAndReturnNull(apiClient.post(`/create-card/${columnID}`, { cardTitle }));
     },
 
     async getCardByID(cardID) {
-        return handleErrorAndReturnNull(apiClient.get(`/get-card/${cardID}`));
+        return await handleErrorAndReturnNull(apiClient.get(`/get-card/${cardID}`));
     },
 
     async updateCard(cardTitle, cardID, cardDescription) {
-        return handleErrorAndReturnNull(apiClient.put(`/update-card/${cardID}`, { cardTitle, cardDescription }));
+        return await handleErrorAndReturnNull(apiClient.put(`/update-card/${cardID}`, { cardTitle, cardDescription }));
     },
 
     async getCardsByColumnID(columnID) {
-        return handleErrorAndReturnNull(apiClient.get(`/columns/${columnID}/cards`));
+        return await handleErrorAndReturnNull(apiClient.get(`/columns/${columnID}/cards`));
     },
 
     async deleteCard(cardID) {
-        return handleErrorAndReturnNull(apiClient.delete(`/delete-card/${cardID}`));
+        return await handleErrorAndReturnNull(apiClient.delete(`/delete-card/${cardID}`));
     },
 
     async getMaxCardIndex(columnID) {
-        return handleErrorAndReturnNull(apiClient.get(`columns/${columnID}/maxIndex`));
+        return await handleErrorAndReturnNull(apiClient.get(`columns/${columnID}/maxIndex`));
     },
 
-    async move(cardID, columnID, prevCardIndex, nextCardIndex) {
-        return handleErrorAndReturnNull(apiClient.post(`/cards/${cardID}/${columnID}/${prevCardIndex}/${nextCardIndex}/move`));
+    async moveCard(cardID, columnID, prevCardIndex, nextCardIndex) {
+        return await handleErrorAndReturnNull(apiClient.put(`/cards/${cardID}/${columnID}/${prevCardIndex}/${nextCardIndex}/move`));
     },
 
 };
