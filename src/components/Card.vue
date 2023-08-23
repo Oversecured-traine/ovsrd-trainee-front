@@ -122,6 +122,12 @@ export default {
 </script>
 
 <style scoped>
+.ghost {
+    background: lightgray;
+    border-radius: 6px;
+    visibility: hidden;
+}
+
 h4 {
     padding: 0.3rem;
     color: #4a5568;
