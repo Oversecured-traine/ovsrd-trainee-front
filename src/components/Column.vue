@@ -5,14 +5,14 @@
             <input type="text" v-model="title" @blur="editColumnTitle" />
             <v-menu offset-y>
                 <template v-slot:activator="{ props }">
-                    <button class="column-actions-btn" v-bind="props">
+                    <button class="column-actions-btn" v-bind="props" @click="handleClick">
                         <v-icon
                             icon="mdi-dots-horizontal"
                             size="small"
                         ></v-icon>
                     </button>
                 </template>
-                <v-list>
+                <v-list v-if="isButtonListVisible">
                     <v-list-item @click="deleteColumn">
                         <v-icon icon="mdi-delete" size="small"></v-icon>
                         Delete list
@@ -50,6 +50,10 @@ export default {
         };
     },
 
+    computed: {
+        ...mapGetters(['isButtonListVisible']),
+    },
+
     methods: {
         ...mapActions([
             'GET_COLUMNS',
@@ -59,7 +63,7 @@ export default {
             'DELETE_COLUMN',
             'UPDATE_COLUMN',
         ]),
-        ...mapMutations(['SET_LOADING']),
+        ...mapMutations(['SET_LOADING', 'SET_DROPDOWN_VISIBLE']),
 
         toast() {
             createToast(
@@ -67,6 +71,11 @@ export default {
                 { timeout: 3500, position: 'top-right', showIcon: true },
             );
         },
+
+        handleClick() {
+            this.SET_DROPDOWN_VISIBLE(true);      
+        },
+
 
         async deleteColumn() {
             try {

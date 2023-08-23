@@ -7,6 +7,7 @@ const store = createStore({
             columns: [],
             cards: [],
             isLoading: true,
+            isButtonListVisible: false,
         };
     },
     mutations: {
@@ -17,6 +18,10 @@ const store = createStore({
 
         SET_LOADING(state, isLoading) {
             state.isLoading = isLoading;
+        },
+
+        SET_DROPDOWN_VISIBLE(state, isButtonListVisible) {
+            state.isButtonListVisible = isButtonListVisible;
         },
 
         SET_CARDS(state, cards) {
@@ -92,6 +97,10 @@ const store = createStore({
 
         isLoading: (state) => {
             return state.isLoading;
+        },
+        
+        isButtonListVisible: (state) => {
+            return state.isButtonListVisible;
         },
     },
 

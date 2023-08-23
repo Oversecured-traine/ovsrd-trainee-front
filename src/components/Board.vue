@@ -6,7 +6,7 @@
         </header>
         <div class="board-container">
             <div class="content-wrapper">
-                <div class="column-container">
+                <div class="column-container" @scroll="handleScroll">
                     <div class="column-cards">
                         <Column
                             v-for="column in getAllColumns"
@@ -60,7 +60,6 @@ export default {
     data() {
         return {
             showModal: false,
-            isLoading: false,
             tempCardID: '',
             tempNewIndex: null,
             moveInSameColumn: false,
@@ -76,7 +75,11 @@ export default {
             'ADD_COLUMN',
             'MOVE_CARD',
         ]),
-        ...mapMutations(['SET_LOADING', 'SET_COLUMNS', 'SET_CARDS']),
+        ...mapMutations(['SET_LOADING', 'SET_COLUMNS', 'SET_CARDS', 'SET_DROPDOWN_VISIBLE']),
+
+        handleScroll() {
+            this.SET_DROPDOWN_VISIBLE(false);
+        },
 
         async onEnd(event) {
             const newColumnID = event.to.getAttribute('data-column-id');
