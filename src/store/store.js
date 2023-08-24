@@ -22,6 +22,7 @@ const store = createStore({
 
         SET_DROPDOWN_VISIBLE(state, isButtonListVisible) {
             state.isButtonListVisible = isButtonListVisible;
+            console.log(state.isButtonListVisible);
         },
 
         SET_CARDS(state, cards) {
@@ -77,6 +78,15 @@ const store = createStore({
                 state.cards.sort((a, b) => a.cardIndex - b.cardIndex);
             }
         },
+
+        MOVE_COLUMN(state, { columnID, columnIndex }) {
+            const columnToMove = state.columns.find(column => column.columnID === columnID);
+   
+            if (columnToMove) {
+                columnToMove.columnIndex = columnIndex;
+                state.columns.sort((a, b) => a.columnIndex - b.columnIndex);
+            }
+        },
         
     },
 
@@ -98,7 +108,7 @@ const store = createStore({
         isLoading: (state) => {
             return state.isLoading;
         },
-        
+
         isButtonListVisible: (state) => {
             return state.isButtonListVisible;
         },
@@ -231,6 +241,34 @@ const store = createStore({
                 commit('MOVE_CARD', { cardID, columnID, cardIndex });
             } catch (error) {
                 console.error('Error updating card:', error);
+            }        
+        },
+
+        async MOVE_COLUMN({ commit, getters }, item) {
+    
+            try {
+                const { columnID, newColumnIndex } = item;       
+                const columns = getters.getAllColumns;
+                let prevColumnIndex = 0;
+                let nextColumnIndex = 0;
+
+                if(newColumnIndex === 0) {
+                    prevColumnIndex = 0;
+                    nextColumnIndex = columns[newColumnIndex + 1].columnIndex;
+                }
+                else if(newColumnIndex === columns.length - 1) {
+                    prevColumnIndex = columns[newColumnIndex - 1].columnIndex;
+                    nextColumnIndex = 0;
+
+                }
+                else {
+                    prevColumnIndex = columns[newColumnIndex - 1].columnIndex;
+                    nextColumnIndex = columns[newColumnIndex + 1].columnIndex;
+                }
+                const { columnIndex } = await apiRequests.moveColumn(columnID, prevColumnIndex, nextColumnIndex);
+                commit('MOVE_COLUMN', { columnID, columnIndex });
+            } catch (error) {
+                console.error('Error updating column:', error);
             }        
         },
         

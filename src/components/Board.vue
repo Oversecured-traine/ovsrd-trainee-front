@@ -8,28 +8,34 @@
             <div class="content-wrapper">
                 <div class="column-container" @scroll="handleScroll">
                     <div class="column-cards">
-                        <Column
-                            v-for="column in getAllColumns"
-                            :key="column.columnID"
-                            :column="column"
-                        >
-                            <draggable
-                                :list="getCardsByColumnID(column.columnID)"
-                                group="cards"
-                                :item-key="(card) => card.cardID"
-                                tag="ul"
-                                ghost-class="ghost"
-                                :data-column-id=column.columnID
-                                @change="onChange"
-                                @end="onEnd"
-                            >
-                                <template #item="{ element }">
-                                    <Card :card="element" :column="column">
-                                        {{ element.cardTitle }}
-                                    </Card>
-                                </template>
-                            </draggable>
-                        </Column>
+                        <draggable
+                            :list="getAllColumns"
+                            group="columns"
+                            :item-key="(column) => column.columnID"
+                            ghost-class="ghost"
+                            class="column-cards"
+                            @change="onColumnChange">
+                            <template #item="{ element: column }">
+                                <Column :column="column">
+                                    <draggable
+                                        :list="getCardsByColumnID(column.columnID)"
+                                        group="cards"
+                                        :item-key="(card) => card.cardID"
+                                        tag="ul"
+                                        ghost-class="ghost"
+                                        :data-column-id="column.columnID"
+                                        @change="onChange"
+                                        @end="onEnd">       
+                                        <template #item="{ element: card }">
+                                            <Card :card="card" :column="column">
+                                                {{ card.cardTitle }}
+                                            </Card>
+                                        </template>
+                                        
+                                    </draggable>
+                                </Column>   
+                            </template>
+                        </draggable>
                         <div class="add-another-column">
                             <button
                                 class="add-another-column-btn"
@@ -74,8 +80,14 @@ export default {
             'GET_CARDS_BY_COLUMN_ID',
             'ADD_COLUMN',
             'MOVE_CARD',
+            'MOVE_COLUMN',
         ]),
-        ...mapMutations(['SET_LOADING', 'SET_COLUMNS', 'SET_CARDS', 'SET_DROPDOWN_VISIBLE']),
+        ...mapMutations([
+            'SET_LOADING',
+            'SET_COLUMNS',
+            'SET_CARDS',
+            'SET_DROPDOWN_VISIBLE',
+        ]),
 
         handleScroll() {
             this.SET_DROPDOWN_VISIBLE(false);
@@ -87,11 +99,32 @@ export default {
             this.SET_LOADING(true);
 
             try {
-                await this.MOVE_CARD({ cardID: this.tempCardID, columnID: newColumnID, newCardIndex: this.tempNewIndex, 
-                                       moveInSameColumn: this.moveInSameColumn });
-
+                await this.MOVE_CARD({
+                    cardID: this.tempCardID,
+                    columnID: newColumnID,
+                    newCardIndex: this.tempNewIndex,
+                    moveInSameColumn: this.moveInSameColumn,
+                });
             } catch (error) {
                 console.error('Error moving a card:', error);
+            } finally {
+                this.SET_LOADING(false);
+            }
+        },
+
+        async onColumnChange(event) {
+            const columnID = event.moved.element.columnID;
+            const newIndex = event.moved.newIndex;
+
+            this.SET_LOADING(true);
+
+            try {
+                await this.MOVE_COLUMN({
+                    columnID: columnID,
+                    newColumnIndex: newIndex,
+                });
+            } catch (error) {
+                console.error('Error moving a column:', error);
             } finally {
                 this.SET_LOADING(false);
             }
@@ -100,13 +133,14 @@ export default {
 
         onChange(event) {
             let item = event.added || event.moved;
-            if(!item) return;
+            if (!item) return;
 
             this.tempCardID = item.element.cardID;
             this.tempNewIndex = item.newIndex;
-            event.moved ? this.moveInSameColumn = true : this.moveInSameColumn = false;
+            event.moved
+                ? (this.moveInSameColumn = true)
+                : (this.moveInSameColumn = false);
         },
-        
 
         async fetchColumnsAndCards() {
             this.SET_LOADING(true);
