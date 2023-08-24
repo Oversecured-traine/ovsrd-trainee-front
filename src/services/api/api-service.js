@@ -73,4 +73,8 @@ export const apiRequests = {
         return await handleErrorAndReturnNull(apiClient.put(`/cards/${cardID}/${columnID}/${prevCardIndex}/${nextCardIndex}/move`));
     },
 
+    async moveColumn(columnID, prevColumnIndex, nextColumnIndex) {
+        return await handleErrorAndReturnNull(apiClient.put(`/columns/${columnID}/${prevColumnIndex}/${nextColumnIndex}/move`));
+    },
+
 };
