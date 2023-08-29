@@ -92,10 +92,11 @@ export default {
                     this.toast();
                 }
 
-
-                if (this.newTitle === this.card.cardTitle 
-                    && this.newDescription.trim() === this.card.cardDescription.trim()) {
-
+                if (
+                    this.newTitle === this.card.cardTitle &&
+                    this.newDescription.trim() ===
+                    this.card.cardDescription.trim()
+                ) {
                     this.newTitle = this.card.cardTitle;
                     this.newDescription = this.card.cardDescription;
 
@@ -107,7 +108,9 @@ export default {
                 const updatedCard = {
                     cardID: this.card.cardID,
                     cardTitle: this.newTitle,
-                    cardDescription: this.newDescription ? this.newDescription.trim() : ' ',
+                    cardDescription: this.newDescription
+                        ? this.newDescription.trim()
+                        : ' ',
                 };
 
                 await this.UPDATE_CARD(updatedCard);
