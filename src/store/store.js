@@ -29,7 +29,6 @@ const store = createStore({
         },
 
         ADD_CARDS(state, cards, columnID) {
-            console.log('cards', cards);
             const existingCards = state.cards.filter(card => card.columnID !== columnID);
             state.cards = [...existingCards, ...cards];
         },
@@ -204,39 +203,9 @@ const store = createStore({
             }
         },
 
-        async MOVE_CARD({ commit, getters }, item) {
-    
+        async MOVE_CARD({ commit }, movedCard) { 
             try {
-                const { cardID, columnID, newCardIndex, moveInSameColumn } = item;               
-                const cards = getters.getCardsByColumnID(columnID);
-                let prevCardIndex = 0;
-                let nextCardIndex = 0;
-
-                if(cards.length === 0) {
-
-                    prevCardIndex = 0;
-                    nextCardIndex = 0;
-                }
-                else if(cards.length > 0) {
-
-                    if(newCardIndex === 0) {
-                        prevCardIndex = 0;
-                        nextCardIndex = cards[newCardIndex].cardIndex;
-                    }
-                    else if(moveInSameColumn && newCardIndex === cards.length - 1) {
-                        prevCardIndex = cards[cards.length - 1].cardIndex;
-                        nextCardIndex = 0;
-                    }
-                    else if(newCardIndex === cards.length) {
-                        prevCardIndex = cards[cards.length - 1].cardIndex;
-                        nextCardIndex = 0;
-
-                    }
-                    else {
-                        prevCardIndex = cards[newCardIndex - 1].cardIndex;
-                        nextCardIndex = cards[newCardIndex].cardIndex;
-                    }
-                }
+                const { cardID, columnID, prevCardIndex, nextCardIndex } = movedCard;
                 const response = await apiRequests.moveCard(cardID, columnID, prevCardIndex, nextCardIndex);
                 if(response && response.status === 200) {
                     const cardIndex = response.data.data.cardIndex;
@@ -247,27 +216,10 @@ const store = createStore({
             }        
         },
 
-        async MOVE_COLUMN({ commit, getters }, item) {
-    
+        async MOVE_COLUMN({ commit }, movedColumn) { 
             try {
-                const { columnID, newColumnIndex } = item;       
-                const columns = getters.getAllColumns;
-                let prevColumnIndex = 0;
-                let nextColumnIndex = 0;
+                const { columnID, prevColumnIndex, nextColumnIndex } = movedColumn;       
 
-                if(newColumnIndex === 0) {
-                    prevColumnIndex = 0;
-                    nextColumnIndex = columns[newColumnIndex + 1].columnIndex;
-                }
-                else if(newColumnIndex === columns.length - 1) {
-                    prevColumnIndex = columns[newColumnIndex - 1].columnIndex;
-                    nextColumnIndex = 0;
-
-                }
-                else {
-                    prevColumnIndex = columns[newColumnIndex - 1].columnIndex;
-                    nextColumnIndex = columns[newColumnIndex + 1].columnIndex;
-                }
                 const response = await apiRequests.moveColumn(columnID, prevColumnIndex, nextColumnIndex);
                 if(response && response.status === 200)  {
                     const columnIndex = response.data.data.columnIndex;

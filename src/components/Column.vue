@@ -75,7 +75,7 @@ export default {
         toast() {
             createToast(
                 { title: 'Title cannot be empty' },
-                { timeout: 3500, position: 'top-right', showIcon: true }
+                { timeout: 3500, position: 'top-right', showIcon: true },
             );
         },
 

@@ -25,9 +25,7 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" text @click="openModal = false"
-                        >Close</v-btn
-                    >
+                    <v-btn color="primary" text @click="openModal = false">Close</v-btn>
                     <v-btn color="primary" text @click="saveCard">Save</v-btn>
                 </v-card-actions>
             </v-card>
@@ -72,7 +70,7 @@ export default {
         toast() {
             createToast(
                 { title: 'Title cannot be empty' },
-                { timeout: 3500, position: 'top-right', showIcon: true }
+                { timeout: 3500, position: 'top-right', showIcon: true },
             );
         },
 
@@ -103,7 +101,7 @@ export default {
                 if (
                     this.newTitle === this.card.cardTitle &&
                     this.newDescription.trim() ===
-                        this.card.cardDescription.trim()
+                    this.card.cardDescription.trim()
                 ) {
                     this.newTitle = this.card.cardTitle;
                     this.newDescription = this.card.cardDescription;
