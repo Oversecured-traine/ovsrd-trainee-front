@@ -22,7 +22,6 @@ const store = createStore({
 
         SET_DROPDOWN_VISIBLE(state, isButtonListVisible) {
             state.isButtonListVisible = isButtonListVisible;
-            console.log(state.isButtonListVisible);
         },
 
         SET_CARDS(state, cards) {

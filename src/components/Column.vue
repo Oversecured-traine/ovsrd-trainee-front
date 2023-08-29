@@ -2,11 +2,7 @@
 <template>
     <div class="column">
         <div class="column-title">
-            <input 
-                type="text" 
-                v-model="title" 
-                @blur="editColumnTitle" 
-            />
+            <input type="text" v-model="title" @blur="editColumnTitle" />
             <v-menu offset-y>
                 <template v-slot:activator="{ props }">
                     <button
@@ -49,7 +45,10 @@ import 'mosha-vue-toastify/dist/style.css';
 
 export default {
     props: {
-        column: Object,
+        column: {
+            type: Object,
+            required: true,
+        },
     },
 
     data() {
@@ -76,7 +75,7 @@ export default {
         toast() {
             createToast(
                 { title: 'Title cannot be empty' },
-                { timeout: 3500, position: 'top-right', showIcon: true },
+                { timeout: 3500, position: 'top-right', showIcon: true }
             );
         },
 
