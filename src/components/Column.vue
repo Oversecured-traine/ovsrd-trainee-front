@@ -5,7 +5,11 @@
             <input type="text" v-model="title" @blur="editColumnTitle" />
             <v-menu offset-y>
                 <template v-slot:activator="{ props }">
-                    <button class="column-actions-btn" v-bind="props" @click="handleClick">
+                    <button
+                        class="column-actions-btn"
+                        v-bind="props"
+                        @click="handleClick"
+                    >
                         <v-icon
                             icon="mdi-dots-horizontal"
                             size="small"
@@ -41,7 +45,10 @@ import 'mosha-vue-toastify/dist/style.css';
 
 export default {
     props: {
-        column: Object,
+        column: {
+            type: Object,
+            required: true,
+        },
     },
 
     data() {
@@ -73,15 +80,13 @@ export default {
         },
 
         handleClick() {
-            this.SET_DROPDOWN_VISIBLE(true);      
+            this.SET_DROPDOWN_VISIBLE(true);
         },
-
 
         async deleteColumn() {
             try {
                 this.SET_LOADING(true);
                 await this.DELETE_COLUMN(this.column.columnID);
-
             } catch (error) {
                 console.error('Error deleting a column:', error);
             } finally {
@@ -93,7 +98,6 @@ export default {
             try {
                 this.SET_LOADING(true);
                 await this.ADD_CARD(this.column.columnID);
-
             } catch (error) {
                 console.error('Error adding a card:', error);
             } finally {
@@ -105,8 +109,10 @@ export default {
             try {
                 const newTitle = event.target.value.trim();
 
-                if (newTitle.length === 0 || newTitle === this.column.columnTitle) {
-
+                if (
+                    newTitle.length === 0 ||
+                    newTitle === this.column.columnTitle
+                ) {
                     this.title = this.column.columnTitle;
                     if (newTitle.length === 0) {
                         this.toast();
@@ -123,7 +129,6 @@ export default {
                 });
 
                 this.title = newTitle;
-
             } catch (error) {
                 console.error('Error updating a column:', error);
                 this.title = this.column.columnTitle;
@@ -131,13 +136,11 @@ export default {
                 this.SET_LOADING(false);
             }
         },
-
     },
 };
 </script>
 
 <style scoped>
-
 .column {
     width: 18rem;
     background-color: #f1f2f4;

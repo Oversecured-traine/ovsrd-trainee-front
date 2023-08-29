@@ -14,34 +14,39 @@
                             :item-key="(column) => column.columnID"
                             ghost-class="ghost"
                             class="column-cards"
-                            @change="onColumnChange">
+                            @change="onColumnChange"
+                        >
                             <template #item="{ element: column }">
                                 <Column :column="column">
                                     <draggable
-                                        :list="getCardsByColumnID(column.columnID)"
+                                        :list="
+                                            getCardsByColumnID(column.columnID)
+                                        "
                                         group="cards"
                                         :item-key="(card) => card.cardID"
                                         tag="ul"
                                         ghost-class="ghost"
                                         :data-column-id="column.columnID"
-                                        @change="onChange"
-                                        @end="onEnd">       
+                                        @change="onCardChange"
+                                        @end="onEnd"
+                                    >
                                         <template #item="{ element: card }">
                                             <Card :card="card" :column="column">
                                                 {{ card.cardTitle }}
                                             </Card>
                                         </template>
-                                        
                                     </draggable>
-                                </Column>   
+                                </Column>
                             </template>
                         </draggable>
                         <div class="add-another-column">
                             <button
                                 class="add-another-column-btn"
-                                @click="addNewColumn">
+                                @click="addNewColumn"
+                            >
                                 <v-icon icon="mdi-plus"></v-icon>
-                                <span style="margin-left: 0.25rem">Add another list</span>
+                                <span style="margin-left: 0.25rem">Add another list</span
+                                >
                             </button>
                         </div>
                     </div>
@@ -68,6 +73,7 @@ export default {
             showModal: false,
             tempCardID: '',
             tempNewIndex: null,
+            tempOldIndex: null,
             moveInSameColumn: false,
         };
     },
@@ -95,15 +101,21 @@ export default {
 
         async onEnd(event) {
             const newColumnID = event.to.getAttribute('data-column-id');
-
+            const cards = this.getCardsByColumnID(newColumnID);
+            const { prevCardIndex, nextCardIndex } = this.calculateCardMoveIndexes(
+                cards, 
+                this.tempOldIndex, 
+                this.tempNewIndex, 
+                this.moveInSameColumn,
+            );
             this.SET_LOADING(true);
 
             try {
                 await this.MOVE_CARD({
                     cardID: this.tempCardID,
                     columnID: newColumnID,
-                    newCardIndex: this.tempNewIndex,
-                    moveInSameColumn: this.moveInSameColumn,
+                    prevCardIndex: prevCardIndex,
+                    nextCardIndex: nextCardIndex,
                 });
             } catch (error) {
                 console.error('Error moving a card:', error);
@@ -114,32 +126,105 @@ export default {
 
         async onColumnChange(event) {
             const columnID = event.moved.element.columnID;
-            const newIndex = event.moved.newIndex;
+            const newColumnIndex = event.moved.newIndex;
+            const columns = this.getAllColumns;
+
+            const { prevColumnIndex, nextColumnIndex } = this.calculateColumnMoveIndexes(columns, newColumnIndex);
 
             this.SET_LOADING(true);
 
             try {
                 await this.MOVE_COLUMN({
                     columnID: columnID,
-                    newColumnIndex: newIndex,
+                    prevColumnIndex: prevColumnIndex,
+                    nextColumnIndex: nextColumnIndex,
                 });
             } catch (error) {
                 console.error('Error moving a column:', error);
             } finally {
                 this.SET_LOADING(false);
             }
-
         },
 
-        onChange(event) {
+        onCardChange(event) {
             let item = event.added || event.moved;
             if (!item) return;
 
             this.tempCardID = item.element.cardID;
             this.tempNewIndex = item.newIndex;
+            this.tempOldIndex = item.oldIndex;
             event.moved
                 ? (this.moveInSameColumn = true)
                 : (this.moveInSameColumn = false);
+        },
+
+        calculateColumnMoveIndexes(columns, newColumnIndex) {
+            let prevColumnIndex = 0;
+            let nextColumnIndex = 0;
+
+            if(newColumnIndex === 0) {
+                nextColumnIndex = columns[newColumnIndex + 1].columnIndex;
+            }
+            else if(newColumnIndex === columns.length - 1) {
+                prevColumnIndex = columns[newColumnIndex - 1].columnIndex;
+            }
+            else {
+                prevColumnIndex = columns[newColumnIndex - 1].columnIndex;
+                nextColumnIndex = columns[newColumnIndex + 1].columnIndex;
+            }
+
+            return { prevColumnIndex, nextColumnIndex };
+        },
+
+        calculateCardMoveIndexes(cards, oldCardIndex, newCardIndex, moveInSameColumn) {
+            let prevCardIndex = 0;
+            let nextCardIndex = 0;
+
+            if (cards.length > 0) {
+                //перемещение в рамках одной колонки
+                if (moveInSameColumn) {
+                    //перемещение в конец
+                    if ((cards.length - 1) === newCardIndex) {
+                        prevCardIndex = cards[newCardIndex].cardIndex;
+                        nextCardIndex = 0;
+                    }
+                    //перемещение в начало
+                    else if (newCardIndex === 0) {
+                        prevCardIndex = 0;
+                        nextCardIndex = cards[newCardIndex].cardIndex;
+                    }
+                    //пермещение между карточек вверх
+                    else if (newCardIndex < oldCardIndex) {
+                        prevCardIndex = cards[newCardIndex - 1].cardIndex;
+                        nextCardIndex = cards[newCardIndex].cardIndex;
+
+                    }
+                    //пермещение между карточек вниз
+                    else if (newCardIndex > oldCardIndex) {
+                        prevCardIndex = cards[newCardIndex].cardIndex;
+                        nextCardIndex = cards[newCardIndex + 1].cardIndex;
+                    }
+                }
+                //перемещение в разные колонки
+
+                //перемещение в начало
+                else if (newCardIndex === 0) {
+                    prevCardIndex = 0;
+                    nextCardIndex = cards[newCardIndex].cardIndex;
+                }
+                //перемещение в конец
+                else if (newCardIndex === cards.length) {
+                    prevCardIndex = cards[cards.length - 1].cardIndex;
+                    nextCardIndex = 0;
+                }
+                //пермещение между карточек
+                else {
+                    prevCardIndex = cards[newCardIndex - 1].cardIndex;
+                    nextCardIndex = cards[newCardIndex].cardIndex;
+                }
+
+            }
+            return { prevCardIndex, nextCardIndex };
         },
 
         async fetchColumnsAndCards() {
