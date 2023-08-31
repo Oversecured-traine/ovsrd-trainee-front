@@ -22,7 +22,6 @@ const store = createStore({
 
         SET_DROPDOWN_VISIBLE(state, isButtonListVisible) {
             state.isButtonListVisible = isButtonListVisible;
-            console.log(state.isButtonListVisible);
         },
 
         SET_CARDS(state, cards) {
@@ -75,8 +74,8 @@ const store = createStore({
             if (cardToMove) {
                 cardToMove.columnID = columnID;
                 cardToMove.cardIndex = cardIndex;
-                state.cards.sort((a, b) => a.cardIndex - b.cardIndex);
             }
+            state.cards.sort((a, b) => a.cardIndex - b.cardIndex);
         },
 
         MOVE_COLUMN(state, { columnID, columnIndex }) {
@@ -84,8 +83,8 @@ const store = createStore({
    
             if (columnToMove) {
                 columnToMove.columnIndex = columnIndex;
-                state.columns.sort((a, b) => a.columnIndex - b.columnIndex);
             }
+            state.columns.sort((a, b) => a.columnIndex - b.columnIndex);
         },
         
     },
@@ -117,9 +116,9 @@ const store = createStore({
     actions: {
         async GET_COLUMNS({ commit }) {
             try {
-                const columns = await apiRequests.getColumns();
-                if (columns) {
-                    commit('SET_COLUMNS', columns);
+                const response = await apiRequests.getColumns();
+                if (response && response.status === 200) {
+                    commit('SET_COLUMNS', response.data.data);
                 }
             } catch (error) {
                 console.error('Error fetching columns:', error);
@@ -128,9 +127,9 @@ const store = createStore({
         
         async GET_CARDS_BY_COLUMN_ID({ commit }, columnID) {
             try {
-                const cards = await apiRequests.getCardsByColumnID(columnID);
-                if (cards.length > 0) { 
-                    commit('ADD_CARDS', cards, columnID);
+                const response = await apiRequests.getCardsByColumnID(columnID);
+                if (response && response.status === 200 && response.data.data.length > 0) { 
+                    commit('ADD_CARDS', response.data.data, columnID);
                 }
             } catch (error) {
                 console.error('Error fetching cards by column ID:', error);
@@ -139,9 +138,9 @@ const store = createStore({
         
         async ADD_COLUMN({ commit }) {
             try {
-                const column = await apiRequests.createColumn('Enter list name');
-                if (column !== null) {
-                    commit('ADD_COLUMN', column);
+                const response = await apiRequests.createColumn('Enter list name');
+                if (response && response.status === 200) {
+                    commit('ADD_COLUMN', response.data.data);
                 }
             } catch (error) {
                 console.error('Error adding column:', error);
@@ -150,9 +149,9 @@ const store = createStore({
         
         async ADD_CARD({ commit }, columnID) {
             try {
-                const card = await apiRequests.createCard({ columnID, cardTitle: 'Press to edit' });
-                if (card !== null) {
-                    commit('ADD_CARD', card);
+                const response = await apiRequests.createCard({ columnID, cardTitle: 'Press to edit' });
+                if (response && response.status === 200) {
+                    commit('ADD_CARD', response.data.data);
                 }
             } catch (error) {
                 console.error('Error adding card:', error);
@@ -161,8 +160,8 @@ const store = createStore({
         
         async DELETE_CARD({ commit }, cardID) {
             try {
-                const card = await apiRequests.deleteCard(cardID);
-                if (card !== null) {
+                const response = await apiRequests.deleteCard(cardID);
+                if (response && response.status === 200) {
                     commit('DELETE_CARD', cardID);
                 }
             } catch (error) {
@@ -172,8 +171,8 @@ const store = createStore({
         
         async DELETE_COLUMN({ commit }, columnID) {
             try {
-                const column = await apiRequests.deleteColumn(columnID);
-                if (column !== null) {
+                const response = await apiRequests.deleteColumn(columnID);
+                if (response && response.status === 200) {
                     commit('DELETE_COLUMN', columnID);
                 }
             } catch (error) {
@@ -183,10 +182,10 @@ const store = createStore({
         
         async UPDATE_COLUMN({ commit }, { columnID, columnTitle }) {
             try {
-                const column = await apiRequests.updateColumn(columnID, columnTitle);
+                const response = await apiRequests.updateColumn(columnID, columnTitle);
 
-                if (column !== null) {
-                    commit('UPDATE_COLUMN', { columnID: column.columnID, columnTitle: column.columnTitle });
+                if (response && response.status === 200) {
+                    commit('UPDATE_COLUMN', { columnID: response.data.data.columnID, columnTitle: response.data.data.columnTitle });
                 }
             } catch (error) {
                 console.error('Error updating column:', error);
@@ -195,8 +194,8 @@ const store = createStore({
         
         async UPDATE_CARD({ commit }, { cardTitle, cardID, cardDescription }) {
             try {
-                const card = await apiRequests.updateCard(cardTitle, cardID, cardDescription);
-                if (card !== null) {
+                const response = await apiRequests.updateCard(cardTitle, cardID, cardDescription);
+                if (response && response.status === 200) {
                     commit('UPDATE_CARD', { cardID, cardTitle, cardDescription });
                 }
             } catch (error) {
@@ -204,69 +203,28 @@ const store = createStore({
             }
         },
 
-        async MOVE_CARD({ commit, getters }, item) {
-    
+        async MOVE_CARD({ commit }, movedCard) { 
             try {
-                const { cardID, columnID, newCardIndex, moveInSameColumn } = item;               
-                const cards = getters.getCardsByColumnID(columnID);
-                let prevCardIndex = 0;
-                let nextCardIndex = 0;
-
-                if(cards.length === 0) {
-
-                    prevCardIndex = 0;
-                    nextCardIndex = 0;
+                const { cardID, columnID, prevCardIndex, nextCardIndex } = movedCard;
+                const response = await apiRequests.moveCard(cardID, columnID, prevCardIndex, nextCardIndex);
+                if(response && response.status === 200) {
+                    const cardIndex = response.data.data.cardIndex;
+                    commit('MOVE_CARD', { cardID, columnID, cardIndex });
                 }
-                else if(cards.length > 0) {
-
-                    if(newCardIndex === 0) {
-                        prevCardIndex = 0;
-                        nextCardIndex = cards[newCardIndex].cardIndex;
-                    }
-                    else if(moveInSameColumn && newCardIndex === cards.length - 1) {
-                        prevCardIndex = cards[cards.length - 1].cardIndex;
-                        nextCardIndex = 0;
-                    }
-                    else if(newCardIndex === cards.length) {
-                        prevCardIndex = cards[cards.length - 1].cardIndex;
-                        nextCardIndex = 0;
-
-                    }
-                    else {
-                        prevCardIndex = cards[newCardIndex - 1].cardIndex;
-                        nextCardIndex = cards[newCardIndex].cardIndex;
-                    }
-                }
-                const { cardIndex } = await apiRequests.moveCard(cardID, columnID, prevCardIndex, nextCardIndex);
-                commit('MOVE_CARD', { cardID, columnID, cardIndex });
             } catch (error) {
                 console.error('Error updating card:', error);
             }        
         },
 
-        async MOVE_COLUMN({ commit, getters }, item) {
-    
+        async MOVE_COLUMN({ commit }, movedColumn) { 
             try {
-                const { columnID, newColumnIndex } = item;       
-                const columns = getters.getAllColumns;
-                let prevColumnIndex = 0;
-                let nextColumnIndex = 0;
+                const { columnID, prevColumnIndex, nextColumnIndex } = movedColumn;       
 
-                if(newColumnIndex === 0) {
-                    prevColumnIndex = 0;
-                    nextColumnIndex = columns[newColumnIndex + 1].columnIndex;
+                const response = await apiRequests.moveColumn(columnID, prevColumnIndex, nextColumnIndex);
+                if(response && response.status === 200)  {
+                    const columnIndex = response.data.data.columnIndex;
+                    commit('MOVE_COLUMN', { columnID, columnIndex });
                 }
-                else if(newColumnIndex === columns.length - 1) {
-                    prevColumnIndex = columns[newColumnIndex - 1].columnIndex;
-                    nextColumnIndex = 0;
-
-                }
-                else {
-                    prevColumnIndex = columns[newColumnIndex - 1].columnIndex;
-                    nextColumnIndex = columns[newColumnIndex + 1].columnIndex;
-                }
-                const { columnIndex } = await apiRequests.moveColumn(columnID, prevColumnIndex, nextColumnIndex);
-                commit('MOVE_COLUMN', { columnID, columnIndex });
             } catch (error) {
                 console.error('Error updating column:', error);
             }        
