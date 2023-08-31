@@ -16,6 +16,8 @@
             <v-card>
                 <v-card-title>
                     <span class="headline">Edit Card</span>
+                    <input id="fileUpload" type="file" hidden @change="handleFileChange">
+                    <v-btn icon="mdi-paperclip" @click="openFileManager" variant="plain"></v-btn>       
                 </v-card-title>
                 <v-card-text>
                     <v-text-field label="Title" v-model="newTitle">
@@ -66,6 +68,24 @@ export default {
                 { title: 'Title cannot be empty' },
                 { timeout: 3500, position: 'top-right', showIcon: true },
             );
+        },
+
+        openFileManager() {
+            document.getElementById('fileUpload').click();
+        },
+
+        async handleFileChange(event) {
+            try {
+                this.SET_LOADING(true);
+                const selectedFile = event.target.files[0];
+                if (selectedFile) {
+                    await this.UPLOAD_IMAGE();
+                }
+            } catch(error) {
+                console.log('Error uploading an image', error);
+            } finally {
+                this.SET_LOADING(false);
+            }
         },
 
         async deleteCard() {

@@ -1,5 +1,5 @@
 import { createStore } from 'vuex';
-import { apiRequests } from '../services/api/api-service';
+import { apiRequests } from '../services/serverless-api/ServerlessApiService';
 
 const store = createStore({
     state() {
