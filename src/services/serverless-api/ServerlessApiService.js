@@ -15,7 +15,7 @@ const handleErrorAndReturnData = async (request) => {
     }
 };
 
-export const apiRequests = {
+export const serverlessRequests = {
 
     async getColumns() {
         return await handleErrorAndReturnData(apiClient.get('/columns'));
@@ -55,6 +55,10 @@ export const apiRequests = {
 
     async updateCard(cardTitle, cardID, cardDescription) {
         return await handleErrorAndReturnData(apiClient.put(`/update-card/${cardID}`, { cardTitle, cardDescription }));
+    },
+
+    async updateCardImage(cardID) {
+        return await handleErrorAndReturnData(apiClient.put(`/update-card-image/${cardID}`));
     },
 
     async getCardsByColumnID(columnID) {

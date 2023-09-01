@@ -2,6 +2,7 @@
 <template>
     <li>
         <div class="card-item" @click="openModal = true">
+            <div v-if="imageURL" class="card-image-preview" @error="handleImageError" :style="{ backgroundImage: `url(${imageURL})` }"></div>
             <h4>
                 <slot> </slot>
             </h4>
@@ -14,10 +15,22 @@
         <!--Modal Window -->
         <v-dialog v-model="openModal" max-width="500">
             <v-card>
+                <v-img
+                    v-if="imageURL"
+                    :src="imageURL"
+                    height="200"
+                    cover
+                    @error="handleImageError"
+                ></v-img>
                 <v-card-title>
                     <span class="headline">Edit Card</span>
-                    <input id="fileUpload" type="file" hidden @change="handleFileChange">
-                    <v-btn icon="mdi-paperclip" @click="openFileManager" variant="plain"></v-btn>       
+                    <input id="fileUpload" type="file" hidden @change="uploadImage">
+                    <v-tooltip top light location="top">
+                        <template v-slot:activator="{ props }">
+                            <v-btn v-bind="props" icon="mdi-paperclip" @click="openFileManager" variant="plain"></v-btn> 
+                        </template>
+                        <span>Attach File</span>
+                    </v-tooltip>  
                 </v-card-title>
                 <v-card-text>
                     <v-text-field label="Title" v-model="newTitle">
@@ -38,6 +51,7 @@
 <script>
 import { mapActions, mapMutations } from 'vuex';
 import { createToast } from 'mosha-vue-toastify';
+// import DefaultImage from '../../public/default.jpg';
 import 'mosha-vue-toastify/dist/style.css';
 
 export default {
@@ -46,6 +60,7 @@ export default {
             openModal: false,
             newTitle: this.card.cardTitle,
             newDescription: this.card.cardDescription,
+            imageURL: null,
         };
     },
     props: {
@@ -66,6 +81,10 @@ export default {
             'ADD_CARD',
             'DELETE_CARD',
             'UPDATE_CARD',
+            'UPLOAD_IMAGE',
+            'SET_IMAGE',
+            'UPDATE_CARD_IMAGE',
+            'DELETE_CARD_IMAGE',
         ]),
         ...mapMutations(['SET_LOADING']),
 
@@ -76,16 +95,28 @@ export default {
             );
         },
 
+        handleImageError() {
+            this.imageURL = '/default.jpg'; 
+        },
+
         openFileManager() {
             document.getElementById('fileUpload').click();
         },
 
-        async handleFileChange(event) {
+        // загрузить картинку на s3 бакет
+        async uploadImage(event) {
             try {
                 this.SET_LOADING(true);
                 const selectedFile = event.target.files[0];
                 if (selectedFile) {
-                    await this.UPLOAD_IMAGE();
+                    await this.UPLOAD_IMAGE({
+                        cardID: this.card.cardID, 
+                        file: selectedFile,
+                    });
+                    await this.setImage(this.card.cardID);
+                    await this.UPDATE_CARD_IMAGE({
+                        cardID: this.card.cardID, 
+                    });
                 }
             } catch(error) {
                 console.log('Error uploading an image', error);
@@ -94,10 +125,26 @@ export default {
             }
         },
 
+        // получить url картинки и установить его для карточки
+        async setImage(cardID) {
+            this.SET_LOADING(true);
+
+            try {
+                const imageURL = await this.SET_IMAGE(cardID);
+                this.imageURL = imageURL;
+            }
+            catch(error) {
+                console.log('Error getting an image', error);
+            }
+            finally {
+                this.SET_LOADING(false);
+            }
+        },
+
         async deleteCard() {
             try {
                 this.SET_LOADING(true);
-
+                await this.deleteCardImage(this.card.cardID);
                 await this.DELETE_CARD(this.card.cardID);
             } catch (error) {
                 console.error('Error deleting a card:', error);
@@ -106,20 +153,33 @@ export default {
             }
         },
 
+        async deleteCardImage(cardID) {
+            await this.DELETE_CARD_IMAGE(cardID);
+        },
+
         async saveCard() {
             try {
                 this.openModal = false;
 
                 this.newTitle = this.newTitle.trim();
 
+                //не отправляем запрос, если:
+
+                //имя колонки пустая строка
                 if (this.newTitle.length === 0) {
                     this.newTitle = this.card.cardTitle;
-
                     this.toast();
+                    return;
+                }
+                //имя колонки не поменялось
+                if(this.newTitle === this.card.cardTitle && !this.newDescription) {
+                    this.newTitle = this.card.cardTitle;
+                    return;
                 }
 
-                if (
-                    this.newTitle === this.card.cardTitle &&
+                //имя колонки не поменялось и описание не поменялось
+                else if (
+                    this.card.cardDescription &&
                     this.newDescription.trim() ===
                     this.card.cardDescription.trim()
                 ) {
@@ -130,7 +190,6 @@ export default {
                 }
 
                 this.SET_LOADING(true);
-
                 const updatedCard = {
                     cardID: this.card.cardID,
                     cardTitle: this.newTitle,
@@ -147,10 +206,29 @@ export default {
             }
         },
     },
+
+    mounted() {
+        if (this.card.hasImage) {
+            this.SET_LOADING(true);
+            this.setImage(this.card.cardID);
+        }
+        this.SET_LOADING(false);
+
+    },
 };
 </script>
 
 <style scoped>
+
+.card-image-preview {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100%;
+  height: 60px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
 .ghost {
     background: lightgray;
     border-radius: 6px;

@@ -14,13 +14,38 @@ const handleErrorAndReturnData = async (request) => {
     }
 };
 
-export const apiRequests = {
+export const dockerRequests = {
 
-    async getImageURL(cardID, fileName) {
-        return await handleErrorAndReturnData(apiClient.get('/get-image-url', { cardID, fileName }));
+    async getImageURL(cardID) {
+        return await handleErrorAndReturnData(apiClient.post('/get-image-url', {
+            cardID: cardID,
+        } ));
     },
 
-    async getUploadImageURL(cardID, fileName, fileType) {
-        return await handleErrorAndReturnData(apiClient.get('/get-upload-image-url', { cardID, fileName, fileType }));
+    async getUploadImageURL(cardID, fileType) {
+        return await handleErrorAndReturnData(apiClient.post('/get-upload-image-url', {
+            cardID: cardID,
+            fileType: fileType,
+        }));
+    },
+
+    async getDeleteImageURL(cardID) {
+        return await handleErrorAndReturnData(apiClient.post('/get-delete-image-url', {
+            cardID: cardID,
+        } ));
+    },
+
+    async deleteFile(deleteUrl) {
+        return await handleErrorAndReturnData(apiClient.delete(deleteUrl));
+    },
+
+    async uploadFile(uploadUrl, file) {
+        return await handleErrorAndReturnData(apiClient.put(uploadUrl, file, 
+            {
+                headers: {
+                    'Content-Type': file.type,
+                },
+            },
+        ));
     },
 };
