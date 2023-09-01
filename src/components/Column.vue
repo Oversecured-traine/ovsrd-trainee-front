@@ -214,5 +214,8 @@ input {
     font-weight: 600;
     color: #4a5568;
     padding: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>
