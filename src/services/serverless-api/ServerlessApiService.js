@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'https://00jmg9ex3k.execute-api.eu-west-1.amazonaws.com/dev',
+    baseURL: process.env.BASE_SERVERLESS_URL || 'https://00jmg9ex3k.execute-api.eu-west-1.amazonaws.com/dev',
     timeout: 10000,
 });
 
@@ -15,7 +15,7 @@ const handleErrorAndReturnData = async (request) => {
     }
 };
 
-export const apiRequests = {
+export const serverlessRequests = {
 
     async getColumns() {
         return await handleErrorAndReturnData(apiClient.get('/columns'));
@@ -55,6 +55,10 @@ export const apiRequests = {
 
     async updateCard(cardTitle, cardID, cardDescription) {
         return await handleErrorAndReturnData(apiClient.put(`/update-card/${cardID}`, { cardTitle, cardDescription }));
+    },
+
+    async updateCardImage(cardID) {
+        return await handleErrorAndReturnData(apiClient.put(`/update-card-image/${cardID}`));
     },
 
     async getCardsByColumnID(columnID) {

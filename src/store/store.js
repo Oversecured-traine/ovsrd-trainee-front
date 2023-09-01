@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
-import { apiRequests } from '../services/api/api-service';
+import { serverlessRequests } from '../services/serverless-api/ServerlessApiService';
+import { dockerRequests } from '../services/docker-api/DockerApiService';
 
 const store = createStore({
     state() {
@@ -68,6 +69,15 @@ const store = createStore({
 
         },
 
+        UPDATE_CARD_IMAGE(state, cardID) {
+            const cardToUpdate = state.cards.find(card => card.cardID === cardID);
+
+            if (cardToUpdate) {
+                cardToUpdate.hasImage = true;
+            }
+
+        },
+
         MOVE_CARD(state, { cardID, columnID, cardIndex }) {
             const cardToMove = state.cards.find(card => card.cardID === cardID);
     
@@ -116,7 +126,7 @@ const store = createStore({
     actions: {
         async GET_COLUMNS({ commit }) {
             try {
-                const response = await apiRequests.getColumns();
+                const response = await serverlessRequests.getColumns();
                 if (response && response.status === 200) {
                     commit('SET_COLUMNS', response.data.data);
                 }
@@ -127,7 +137,7 @@ const store = createStore({
         
         async GET_CARDS_BY_COLUMN_ID({ commit }, columnID) {
             try {
-                const response = await apiRequests.getCardsByColumnID(columnID);
+                const response = await serverlessRequests.getCardsByColumnID(columnID);
                 if (response && response.status === 200 && response.data.data.length > 0) { 
                     commit('ADD_CARDS', response.data.data, columnID);
                 }
@@ -138,7 +148,7 @@ const store = createStore({
         
         async ADD_COLUMN({ commit }) {
             try {
-                const response = await apiRequests.createColumn('Enter list name');
+                const response = await serverlessRequests.createColumn('Enter list name');
                 if (response && response.status === 200) {
                     commit('ADD_COLUMN', response.data.data);
                 }
@@ -149,7 +159,7 @@ const store = createStore({
         
         async ADD_CARD({ commit }, columnID) {
             try {
-                const response = await apiRequests.createCard({ columnID, cardTitle: 'Press to edit' });
+                const response = await serverlessRequests.createCard({ columnID, cardTitle: 'Press to edit' });
                 if (response && response.status === 200) {
                     commit('ADD_CARD', response.data.data);
                 }
@@ -160,7 +170,7 @@ const store = createStore({
         
         async DELETE_CARD({ commit }, cardID) {
             try {
-                const response = await apiRequests.deleteCard(cardID);
+                const response = await serverlessRequests.deleteCard(cardID);
                 if (response && response.status === 200) {
                     commit('DELETE_CARD', cardID);
                 }
@@ -171,7 +181,7 @@ const store = createStore({
         
         async DELETE_COLUMN({ commit }, columnID) {
             try {
-                const response = await apiRequests.deleteColumn(columnID);
+                const response = await serverlessRequests.deleteColumn(columnID);
                 if (response && response.status === 200) {
                     commit('DELETE_COLUMN', columnID);
                 }
@@ -182,7 +192,7 @@ const store = createStore({
         
         async UPDATE_COLUMN({ commit }, { columnID, columnTitle }) {
             try {
-                const response = await apiRequests.updateColumn(columnID, columnTitle);
+                const response = await serverlessRequests.updateColumn(columnID, columnTitle);
 
                 if (response && response.status === 200) {
                     commit('UPDATE_COLUMN', { columnID: response.data.data.columnID, columnTitle: response.data.data.columnTitle });
@@ -194,7 +204,7 @@ const store = createStore({
         
         async UPDATE_CARD({ commit }, { cardTitle, cardID, cardDescription }) {
             try {
-                const response = await apiRequests.updateCard(cardTitle, cardID, cardDescription);
+                const response = await serverlessRequests.updateCard(cardTitle, cardID, cardDescription);
                 if (response && response.status === 200) {
                     commit('UPDATE_CARD', { cardID, cardTitle, cardDescription });
                 }
@@ -203,10 +213,21 @@ const store = createStore({
             }
         },
 
+        async UPDATE_CARD_IMAGE({ commit }, { cardID }) {
+            try {
+                const response = await serverlessRequests.updateCardImage(cardID);
+                if (response && response.status === 200) {
+                    commit('UPDATE_CARD_IMAGE', { cardID });
+                }
+            } catch (error) {
+                console.error('Error updating card image:', error);
+            }
+        },
+
         async MOVE_CARD({ commit }, movedCard) { 
             try {
                 const { cardID, columnID, prevCardIndex, nextCardIndex } = movedCard;
-                const response = await apiRequests.moveCard(cardID, columnID, prevCardIndex, nextCardIndex);
+                const response = await serverlessRequests.moveCard(cardID, columnID, prevCardIndex, nextCardIndex);
                 if(response && response.status === 200) {
                     const cardIndex = response.data.data.cardIndex;
                     commit('MOVE_CARD', { cardID, columnID, cardIndex });
@@ -220,7 +241,7 @@ const store = createStore({
             try {
                 const { columnID, prevColumnIndex, nextColumnIndex } = movedColumn;       
 
-                const response = await apiRequests.moveColumn(columnID, prevColumnIndex, nextColumnIndex);
+                const response = await serverlessRequests.moveColumn(columnID, prevColumnIndex, nextColumnIndex);
                 if(response && response.status === 200)  {
                     const columnIndex = response.data.data.columnIndex;
                     commit('MOVE_COLUMN', { columnID, columnIndex });
@@ -228,6 +249,38 @@ const store = createStore({
             } catch (error) {
                 console.error('Error updating column:', error);
             }        
+        },
+
+        async UPLOAD_IMAGE({ commit }, { cardID, file }) {
+            try {
+                const response = await dockerRequests.getUploadImageURL(cardID, file.type);
+                if(response) {
+                    await dockerRequests.uploadFile(response.data.signedUrl, file);
+                }
+            } catch (error) {
+                console.error('Error uploading an image:', error);
+            }
+
+        },
+
+        async SET_IMAGE({ commit }, cardID) {
+            try {
+                const response = await dockerRequests.getImageURL(cardID);
+                return response.data.signedUrl;
+            } catch(error) {
+                console.error('Error getting an image:', error);
+            }
+        },
+
+        async DELETE_CARD_IMAGE({ commit }, cardID) {
+            try {
+                const response = await dockerRequests.getDeleteImageURL(cardID);
+                if(response) {
+                    await dockerRequests.deleteFile(response.data.signedUrl);
+                }
+            } catch(error) {
+                console.error('Error deleting an image:', error);
+            }
         },
         
     },

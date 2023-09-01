@@ -30,7 +30,7 @@ export default {
     justify-content: center;
     align-items: center;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: 5000;
 }
 
 .spinner {

@@ -14,39 +14,34 @@
                             :item-key="(column) => column.columnID"
                             ghost-class="ghost"
                             class="column-cards"
-                            @change="onColumnChange"
-                        >
+                            @change="onColumnChange">
                             <template #item="{ element: column }">
                                 <Column :column="column">
                                     <draggable
-                                        :list="
-                                            getCardsByColumnID(column.columnID)
-                                        "
+                                        :list="getCardsByColumnID(column.columnID)"
                                         group="cards"
                                         :item-key="(card) => card.cardID"
                                         tag="ul"
                                         ghost-class="ghost"
                                         :data-column-id="column.columnID"
                                         @change="onCardChange"
-                                        @end="onEnd"
-                                    >
+                                        @end="onEnd">       
                                         <template #item="{ element: card }">
                                             <Card :card="card" :column="column">
                                                 {{ card.cardTitle }}
                                             </Card>
                                         </template>
+                                        
                                     </draggable>
-                                </Column>
+                                </Column>   
                             </template>
                         </draggable>
                         <div class="add-another-column">
                             <button
                                 class="add-another-column-btn"
-                                @click="addNewColumn"
-                            >
+                                @click="addNewColumn">
                                 <v-icon icon="mdi-plus"></v-icon>
-                                <span style="margin-left: 0.25rem">Add another list</span
-                                >
+                                <span style="margin-left: 0.25rem">Add another list</span>
                             </button>
                         </div>
                     </div>
@@ -73,7 +68,6 @@ export default {
             showModal: false,
             tempCardID: '',
             tempNewIndex: null,
-            tempOldIndex: null,
             moveInSameColumn: false,
         };
     },
