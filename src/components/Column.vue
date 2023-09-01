@@ -181,6 +181,11 @@ export default {
     flex: 1;
     padding-left: 0.25rem;
     padding-right: 0.75rem;
+    border-top: solid thin #D9CDFC;
+    border-bottom: solid thin #D9CDFC;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+
 }
 
 .add-btn {
