@@ -8,7 +8,8 @@ phases:
       - npm install
   build:
     commands:
-      - npm run build --env BASE_DOCKER_URL=${env:BASE_DOCKER_URL}
+      - export BASE_DOCKER_URL=$BASE_DOCKER_URL  
+      - npm run build
   post_build:
     commands:
       - aws s3 sync dist/ s3://$S3_CONTENT_BUCKET_FRONT
