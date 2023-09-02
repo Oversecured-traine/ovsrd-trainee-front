@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: process.env.BASE_DOCKER_URL,
+    baseURL: process.env.BASE_DOCKER_URL || 'https://docke-backd-7qavgjk8qdzj-154944622.eu-west-1.elb.amazonaws.com',
 });
 
 const handleErrorAndReturnData = async (request) => {
