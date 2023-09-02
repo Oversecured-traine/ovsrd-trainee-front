@@ -8,7 +8,7 @@ phases:
       - npm install
   build:
     commands:
-      - npm run build --env BASE_DOCKER_URL=Docke-BackD-7QAVGJK8QDZJ-154944622.eu-west-1.elb.amazonaws.com
+      - npm run build --env BASE_DOCKER_URL=${env:BASE_DOCKER_URL}
   post_build:
     commands:
       - aws s3 sync dist/ s3://$S3_CONTENT_BUCKET_FRONT
