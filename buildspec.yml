@@ -10,7 +10,7 @@ phases:
       - echo "REACT_APP_ENV= ${ENV}" >> .env
       - echo "BASE_DOCKER_URL= ${BASE_DOCKER_URL}" >> .env
       - echo $BASE_DOCKER_URL
-      - echo .env
+      - cat .env
       - npm run build
   post_build:
     commands:
