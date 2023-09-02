@@ -40,8 +40,8 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" text @click="openModal = false">Close</v-btn>
-                    <v-btn color="primary" text @click="saveCard">Save</v-btn>
+                    <v-btn color="primary" variant="tonal" @click="openModal = false">Close</v-btn>
+                    <v-btn color="primary" variant="tonal" @click="saveCard">Save</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
