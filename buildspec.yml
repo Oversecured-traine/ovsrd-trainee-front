@@ -1,4 +1,7 @@
 version: 0.2
+env:
+  variables:
+    BASE_DOCKER_URL: "https://$BASE_DOCKER_URL"
 
 phases:
   install:
@@ -6,11 +9,12 @@ phases:
       nodejs: 18
     commands:
       - npm install
-      - export BASE_DOCKER_URL="https://$BASE_DOCKER_URL"
-      - echo "REACT_APP_ENV= ${ENV}" >> .env
-      - echo "BASE_DOCKER_URL= ${BASE_DOCKER_URL}" >> .env
       - echo $BASE_DOCKER_URL
-      - cat .env
+#      - export BASE_DOCKER_URL="https://$BASE_DOCKER_URL"
+#      - echo "REACT_APP_ENV= ${ENV}" >> .env
+#      - echo "BASE_DOCKER_URL= ${BASE_DOCKER_URL}" >> .env
+#      - echo $BASE_DOCKER_URL
+ #     - cat .env
       - npm run build
   post_build:
     commands:
