@@ -6,7 +6,9 @@ phases:
       nodejs: 18
     commands:
       - npm install
-      - export BASE_DOCKER_URL="https://Docke-BackD-7QAVGJK8QDZJ-154944622.eu-west-1.elb.amazonaws.com"
+      - export BASE_DOCKER_URL="https://$BASE_DOCKER_URL"
+      - echo "REACT_APP_ENV= ${ENV}" >> .env
+      - echo "BASE_DOCKER_URL= ${BASE_DOCKER_URL}" >> .env
       - echo $BASE_DOCKER_URL
       - npm run build
   post_build:
