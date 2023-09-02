@@ -8,18 +8,17 @@ phases:
       - npm install
   build:
     commands:
-      - npm run build
+      - |
+        export CL_FRONT_DIST_ID=$CL_FRONT_DIST_ID
+        export BASE_DOCKER_URL=$BASE_DOCKER_URL
+        export DOCKER_BUCKET_NAME=$DOCKER_BUCKET_NAME
+        export S3_CONTENT_BUCKET_FRONT=$S3_CONTENT_BUCKET_FRONT
+        npm run build
   post_build:
     commands:
-      - aws s3 sync dist/ s3://$S3_Content_Bucket
+      - aws s3 sync dist/ s3://$S3_CONTENT_BUCKET_FRONT
       - aws cloudfront create-invalidation --distribution-id $CL_FRONT_DIST_ID --paths "/*"
 
 artifacts:
   files:
     - '**/*'
-
-
-
-
-
-
