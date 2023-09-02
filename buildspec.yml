@@ -9,6 +9,7 @@ phases:
   build:
     commands:
       - export BASE_DOCKER_URL=$BASE_DOCKER_URL  
+      - echo BASE_DOCKER_URL
       - npm run build
   post_build:
     commands:
