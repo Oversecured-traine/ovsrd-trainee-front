@@ -6,9 +6,7 @@ phases:
       nodejs: 18
     commands:
       - npm install
-  build:
-    commands:
-      - export BASE_DOCKER_URL=$BASE_DOCKER_URL  
+      - export BASE_DOCKER_URL="https://Docke-BackD-7QAVGJK8QDZJ-154944622.eu-west-1.elb.amazonaws.com"
       - echo $BASE_DOCKER_URL
       - npm run build
   post_build:
