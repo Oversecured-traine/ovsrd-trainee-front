@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 console.log('test');
+console.log(process.env);
 console.log(process.env.BASE_DOCKER_URL);
 
 const apiClient = axios.create({
