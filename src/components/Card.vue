@@ -22,7 +22,7 @@
                     cover
                     @error="handleImageError"
                 ></v-img>
-                <v-card-title>
+                <v-card-title class="modal-title">
                     <span class="headline">Edit Card</span>
                     <input id="fileUpload" type="file" hidden @change="uploadImage">
                     <v-tooltip top light location="top">
@@ -32,7 +32,7 @@
                         <span>Attach File</span>
                     </v-tooltip>  
                 </v-card-title>
-                <v-card-text>
+                <v-card-text class="card-title">
                     <v-text-field label="Title" v-model="newTitle">
                     </v-text-field>
                     <v-textarea label="Description" v-model="newDescription">
@@ -219,6 +219,17 @@ export default {
 </script>
 
 <style scoped>
+
+.modal-title {
+    color:#4a5568;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+}
+
+.card-title {
+    color:#4a5568;
+    font-weight: 400;
+}
 
 .card-image-preview {
   background-size: cover;
