@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "cross-env BASE_DOCKER_URL='https://docke-backd-7qavgjk8qdzj-154944622.eu-west-1.elb.amazonaws.com' vue-cli-service build",
+    "build": "vue-cli-service build",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -12,7 +12,7 @@
     "@mdi/font": "5.9.55",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
-    "cross-env": "^7.0.3",
+    "dotenv": "^16.3.1",
     "mosha-vue-toastify": "^1.0.23",
     "roboto-fontface": "*",
     "vue": "^3.2.13",

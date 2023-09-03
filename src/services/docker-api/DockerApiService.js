@@ -2,10 +2,10 @@ import axios from 'axios';
 
 console.log('test');
 console.log(process.env);
-console.log(process.env.BASE_DOCKER_URL);
+console.log(process.env.VUE_APP_BASE_DOCKER_URL);
 
 const apiClient = axios.create({
-    baseURL: process.env.BASE_DOCKER_URL,
+    baseURL: process.env.VUE_APP_BASE_DOCKER_URL,
 });
 
 const handleErrorAndReturnData = async (request) => {
