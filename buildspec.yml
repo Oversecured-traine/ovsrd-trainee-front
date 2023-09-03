@@ -6,7 +6,7 @@ phases:
       nodejs: 18
     commands:
       - npm install
-      - export VUE_APP_BASE_DOCKER_URL="https://based_docker_task_trecker.kozub.dev"
+      - export VUE_APP_BASE_DOCKER_URL="https://based_docker_api_task_trecker_${ENV}.kozub.dev"
       - echo $VUE_APP_BASE_DOCKER_URL
       - npm run build
   post_build:
