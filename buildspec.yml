@@ -6,7 +6,7 @@ phases:
       nodejs: 18
     commands:
       - npm install
-      - export VUE_APP_BASE_DOCKER_URL="https://docker_api_kryvobok_test.kozub.dev"
+      - export VUE_APP_BASE_DOCKER_URL="https://docker_api_kryvobok_${ENV}.kozub.dev"
       - echo $VUE_APP_BASE_DOCKER_URL
       - npm run build
   post_build:
