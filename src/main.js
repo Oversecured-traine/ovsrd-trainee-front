@@ -1,11 +1,14 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import vuetify from './plugins/vuetify';
+import { createVuetify } from 'vuetify';
 import { loadFonts } from './plugins/webfontloader';
 import store from './store/store';
 loadFonts();
 
+import 'vuetify/styles';
+import '@mdi/font/css/materialdesignicons.css';
+
 createApp(App)
     .use(store)
-    .use(vuetify)
+    .use(createVuetify())
     .mount('#app');

@@ -51,7 +51,6 @@
 <script>
 import { mapActions, mapMutations } from 'vuex';
 import { createToast } from 'mosha-vue-toastify';
-// import DefaultImage from '../../public/default.jpg';
 import 'mosha-vue-toastify/dist/style.css';
 
 export default {

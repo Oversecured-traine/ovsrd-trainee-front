@@ -2,7 +2,7 @@
 <template>
     <div class="main-container">
         <header class="header-section">
-            <span class="logo">Trello</span>
+            <span class="logo">Task Tracker</span>
         </header>
         <div class="board-container">
             <div class="content-wrapper">

@@ -1,11 +1,7 @@
 import axios from 'axios';
 
-console.log('test');
-console.log(process.env);
-console.log(process.env.VUE_APP_BASE_DOCKER_URL);
-
 const apiClient = axios.create({
-    baseURL: process.env.VUE_APP_BASE_DOCKER_URL,
+    baseURL: process.env.VUE_APP_BASE_DOCKER_URL || 'https://docker_api_kryvobok_test.kozub.dev',
 });
 
 const handleErrorAndReturnData = async (request) => {

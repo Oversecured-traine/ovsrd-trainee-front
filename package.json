@@ -12,7 +12,6 @@
     "@mdi/font": "5.9.55",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
-    "dotenv": "^16.3.1",
     "mosha-vue-toastify": "^1.0.23",
     "roboto-fontface": "*",
     "vue": "^3.2.13",
