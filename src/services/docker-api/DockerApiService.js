@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+console.log('test');
+console.log(process.env);
+console.log(process.env.VUE_APP_BASE_DOCKER_URL);
+
 const apiClient = axios.create({
-    baseURL: process.env.BASE_DOCKER_URL || 'https://Docke-BackD-7QAVGJK8QDZJ-154944622.eu-west-1.elb.amazonaws.com',
+    baseURL: process.env.VUE_APP_BASE_DOCKER_URL,
 });
 
 const handleErrorAndReturnData = async (request) => {
