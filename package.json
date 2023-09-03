@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "cross-env BASE_DOCKER_URL=$BASE_DOCKER_URL vue-cli-service build",
     "lint": "eslint ."
   },
   "dependencies": {
