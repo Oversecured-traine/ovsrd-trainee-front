@@ -7,10 +7,7 @@ phases:
     commands:
       - npm install
       - export VUE_APP_BASE_DOCKER_URL="https://based_docker_task_trecker.kozub.dev"
-#      - echo "REACT_APP_ENV= ${ENV}" >> .env
- #     - echo "BASE_DOCKER_URL= ${BASE_DOCKER_URL}" >> .env
       - echo $VUE_APP_BASE_DOCKER_URL
-#      - cat .env
       - npm run build
   post_build:
     commands:
