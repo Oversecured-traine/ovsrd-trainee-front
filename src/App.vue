@@ -2,7 +2,7 @@
     <v-app>
         <v-main>
             <router-view/>
-            <!-- <LoadingSpinner v-if="isLoading"/> -->
+            <LoadingSpinner v-if="isLoading"/>
         </v-main>
     </v-app>
 </template>
@@ -12,7 +12,7 @@ import LoadingSpinner from './components/LoadingSpinner.vue';
 import { mapGetters } from 'vuex';
 export default {
     components: {
-        // LoadingSpinner,
+        LoadingSpinner,
     },
     computed: {
         ...mapGetters(['isLoading']),
