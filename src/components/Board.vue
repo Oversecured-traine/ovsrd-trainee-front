@@ -33,7 +33,7 @@
                                         @change="onCardChange"
                                         @end="onEnd">       
                                         <template #item="{ element: card }">
-                                            <Card :card="card" :column="column" :url="setImageURL(card.cardID)">
+                                            <Card :card="card" :column="column">
                                                 {{ card.cardTitle }}
                                             </Card>
                                         </template>
@@ -124,9 +124,7 @@ export default {
                 this.SET_LOADING(false);
             }
         },
-        async setImageURL(cardID) {
-            return await this.SET_IMAGE(cardID);
-        },
+
         async onColumnChange(event) {
             const columnID = event.moved.element.columnID;
             const newColumnIndex = event.moved.newIndex;
