@@ -6,8 +6,10 @@ phases:
       nodejs: 18
     commands:
       - npm install
-  build:
-    commands:
+      - export VUE_APP_BASE_SERVERLESS_URL="https://00jmg9ex3k.execute-api.eu-west-1.amazonaws.com/dev"
+      - echo $VUE_APP_BASE_SERVERLESS_URL
+      - export VUE_APP_BASE_DOCKER_URL="https://docker_api_kryvobok_${ENV}.kozub.dev"
+      - echo $VUE_APP_BASE_DOCKER_URL
       - npm run build
   post_build:
     commands:
@@ -17,4 +19,3 @@ phases:
 artifacts:
   files:
     - '**/*'
-
