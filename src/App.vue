@@ -1,22 +1,23 @@
 <template>
-  <div>
-    <h1>{{ greeting }}</h1>
-  </div>
+    <v-app>
+        <v-main>
+            <router-view/>
+            <LoadingSpinner v-if="isLoading"/>
+        </v-main>
+    </v-app>
 </template>
 
 <script>
+import LoadingSpinner from './components/LoadingSpinner.vue';
+import { mapGetters } from 'vuex';
 export default {
-  data() {
-    return {
-      greeting: 'Hello World by Oleksand & Oleksandra',
-    };
-  },
-};
-</script>
+    components: {
+        LoadingSpinner,
+    },
+    computed: {
+        ...mapGetters(['isLoading']),
+    }, 
 
-<style scoped>
-h1 {
-  color: blue;
-  text-align: center;
-}
-</style>
+};
+
+</script>
