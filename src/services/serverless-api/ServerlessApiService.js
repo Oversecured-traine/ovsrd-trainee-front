@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: process.env.BASE_SERVERLESS_URL || 'https://00jmg9ex3k.execute-api.eu-west-1.amazonaws.com/dev',
+    baseURL: process.env.VUE_APP_BASE_SERVERLESS_URL,
     timeout: 10000,
 });
 

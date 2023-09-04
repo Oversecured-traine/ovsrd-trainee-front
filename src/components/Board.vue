@@ -1,8 +1,14 @@
 <!-- eslint-disable vue/multi-word-component-names -->
+<router-view></router-view>
 <template>
+
     <div class="main-container">
         <header class="header-section">
             <span class="logo">Task Tracker</span>
+            <nav>
+                <router-link class="home-link" to="/">Home</router-link>
+                <router-link class="about-link" to="/about">About</router-link>
+            </nav>  
         </header>
         <div class="board-container">
             <div class="content-wrapper">
@@ -257,6 +263,28 @@ export default {
 </script>
 
 <style scoped>
+nav {
+    padding-top: 0.5rem;
+}
+.home-link, .about-link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 0.375rem;
+    text-decoration: none;
+}
+
+.home-link:hover {
+    background-color: #f3f4f6;
+}
+
+.about-link:hover {
+    background-color: #f3f4f6;
+}
+
 ul {
     list-style-type: none;
     display: flex;
@@ -286,6 +314,7 @@ ul {
     display: flex;
     background-color: #ffffff;
     padding: 0.75rem 1rem;
+    justify-content: space-between;
 }
 
 .logo {
