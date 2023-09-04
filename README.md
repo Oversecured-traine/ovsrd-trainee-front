@@ -4,6 +4,7 @@
 
 This is a trello clone task tracker application built with Vue.js and Vuetify.
 
+
 ### Prerequisites :heavy_check_mark:
 
 Make sure you have the following software installed on your machine:
