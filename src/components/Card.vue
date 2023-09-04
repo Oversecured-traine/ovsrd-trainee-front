@@ -160,39 +160,37 @@ export default {
             try {
                 this.openModal = false;
 
-                this.newTitle = this.newTitle.trim();
-
                 //не отправляем запрос, если:
 
-                //имя колонки пустая строка
-                if (this.newTitle.length === 0) {
+                //имя карточки пустое
+                if (!this.newTitle) {
                     this.newTitle = this.card.cardTitle;
+                    if(this.card.cardDescription) {
+                        this.newDescription = this.card.cardDescription;
+                    }
                     this.toast();
                     return;
                 }
-                //имя колонки не поменялось
-                if(this.newTitle === this.card.cardTitle && !this.newDescription) {
-                    this.newTitle = this.card.cardTitle;
-                    return;
-                }
 
-                //имя колонки не поменялось и описание не поменялось
-                else if (
-                    this.card.cardDescription &&
+                this.newTitle = this.newTitle.trim();
+
+                //имя карточки и описание не поменялось
+                if(this.newTitle === this.card.cardTitle && (
+                    this.card.cardDescription && 
+                    this.newDescription &&
                     this.newDescription.trim() ===
-                    this.card.cardDescription.trim()
-                ) {
+                    this.card.cardDescription.trim())) 
+                {
                     this.newTitle = this.card.cardTitle;
                     this.newDescription = this.card.cardDescription;
-
                     return;
                 }
 
                 this.SET_LOADING(true);
                 const updatedCard = {
                     cardID: this.card.cardID,
-                    cardTitle: this.newTitle,
-                    cardDescription: this.newDescription
+                    cardTitle: this.newTitle.trim(),
+                    cardDescription: this.newDescription && this.newDescription !== ' '
                         ? this.newDescription.trim()
                         : ' ',
                 };
