@@ -69,9 +69,8 @@ const store = createStore({
 
         },
 
-        UPDATE_CARD_IMAGE(state, cardID) {
+        UPDATE_CARD_IMAGE(state, { cardID }) {
             const cardToUpdate = state.cards.find(card => card.cardID === cardID);
-
             if (cardToUpdate) {
                 cardToUpdate.hasImage = true;
             }
