@@ -40,12 +40,6 @@
   
   <style scoped>
 
-@media (max-width: 768px) {
-    .content-wrapper {
-      max-width: 100%;
-    }
-  }
-
   img {
     height: 50%;
     width: 100%;
@@ -139,6 +133,12 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .content-wrapper {
+      max-width: 100%;
     }
   }
   </style>
