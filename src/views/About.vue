@@ -40,6 +40,12 @@
   
   <style scoped>
 
+@media (max-width: 768px) {
+    .content-wrapper {
+      max-width: 100%;
+    }
+  }
+
   img {
     height: 50%;
     width: 100%;
